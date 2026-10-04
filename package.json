@@ -1,0 +1,26 @@
+{
+  "name": "sneaker-rush-3d",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser 3D sneaker running / pet progression simulator (Three.js), built for CrazyGames.",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node tools/vendor.mjs",
+    "vendor": "node tools/vendor.mjs",
+    "dev": "node tools/serve.mjs . 5173",
+    "start": "npm run dev",
+    "build": "node tools/build.mjs",
+    "preview": "node tools/serve.mjs dist 5174",
+    "test": "node test/economy.test.mjs",
+    "assets": "node tools/assets.mjs assets",
+    "fixtures": "node tools/make-fixtures.mjs",
+    "sim": "node tools/sim.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "three": "^0.170.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

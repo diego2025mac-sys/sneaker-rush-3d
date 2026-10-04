@@ -1,86 +1,79 @@
-# three.js
+# Sneaker Rush 3D
 
-[![NPM Package][npm]][npm-url]
-[![Build Size][build-size]][build-size-url]
-[![NPM Downloads][npm-downloads]][npmtrends-url]
-[![DeepScan][deepscan]][deepscan-url]
-[![Discord][discord]][discord-url]
+Browser-based 3D progression simulator built with Three.js, targeting CrazyGames.
 
-#### JavaScript 3D library
+**Core loop:** buy sneakers (running speed) → hatch pets (money multiplier) → enter the run area → run as far as you dare → **cash out** → upgrade → repeat.
 
-The aim of the project is to create an easy-to-use, lightweight, cross-browser, general-purpose 3D library. The current builds only include a WebGL renderer but WebGPU (experimental), SVG and CSS3D renderers are also available as addons.
+## Requirements
 
-[Examples](https://threejs.org/examples/) &mdash;
-[Docs](https://threejs.org/docs/) &mdash;
-[Manual](https://threejs.org/manual/) &mdash;
-[Wiki](https://github.com/mrdoob/three.js/wiki) &mdash;
-[Migrating](https://github.com/mrdoob/three.js/wiki/Migration-Guide) &mdash;
-[Questions](https://stackoverflow.com/questions/tagged/three.js) &mdash;
-[Forum](https://discourse.threejs.org/) &mdash;
-[Discord](https://discord.gg/56GBJwAnUS)
+- Node.js 20+
+- npm
 
-### Usage
+## Getting started
 
-This code creates a scene, a camera, and a geometric cube, and it adds the cube to the scene. It then creates a `WebGL` renderer for the scene and camera, and it adds that viewport to the `document.body` element. Finally, it animates the cube within the scene for the camera.
-
-```javascript
-import * as THREE from 'three';
-
-const width = window.innerWidth, height = window.innerHeight;
-
-// init
-
-const camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 10 );
-camera.position.z = 1;
-
-const scene = new THREE.Scene();
-
-const geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-const material = new THREE.MeshNormalMaterial();
-
-const mesh = new THREE.Mesh( geometry, material );
-scene.add( mesh );
-
-const renderer = new THREE.WebGLRenderer( { antialias: true } );
-renderer.setSize( width, height );
-renderer.setAnimationLoop( animate );
-document.body.appendChild( renderer.domElement );
-
-// animation
-
-function animate( time ) {
-
-	mesh.rotation.x = time / 2000;
-	mesh.rotation.y = time / 1000;
-
-	renderer.render( scene, camera );
-
-}
+```bash
+npm install      # installs three + esbuild and vendors three.js into lib/ (postinstall)
+npm run dev      # http://localhost:5173
 ```
 
-If everything goes well, you should see [this](https://jsfiddle.net/v98k6oze/).
+The game is plain ES modules served as static files: `index.html` uses an import map that points `three` and `three/addons/` at the vendored copies in `lib/`, so nothing is loaded from a CDN.
 
-### Cloning this repository
+Dev-only URL flags: `?debug=1` (debug panel on localhost), `?assets=fixtures` (load the GLB test fixtures from `test/fixtures/assets/`).
 
-Cloning the repo with all its history results in a ~2 GB download. If you don't need the whole history you can use the `depth` parameter to significantly reduce download size.
+## Scripts
 
-```sh
-git clone --depth=1 https://github.com/mrdoob/three.js.git
+| Command | What it does |
+|---|---|
+| `npm run dev` / `npm start` | Static dev server on port 5173 (`tools/serve.mjs`) |
+| `npm test` | Pure-logic tests: economy, eggs, pets, progression, missions, rebirth, saves (`test/economy.test.mjs`) |
+| `npm run build` | Production bundle into `dist/` (`tools/build.mjs`): minified `js/game.min.js`, CSS, assets, decoders |
+| `npm run preview` | Serve `dist/` on port 5174 |
+| `npm run assets` | Regenerate `assets/manifest.json` and audit every GLB (`tools/assets.mjs`) |
+| `npm run fixtures` | Export the procedural models as GLB test fixtures (`tools/make-fixtures.mjs`) |
+| `npm run sim` | Economy pacing simulator (`tools/sim.mjs`) |
+| `npm run vendor` | Copy three.js + used addons from `node_modules/` into `lib/` (`tools/vendor.mjs`) |
+
+## Repository layout
+
+```
+index.html            game page (dev entry; the build rewrites it for dist/)
+css/                  UI styles
+js/
+  main.js             entry point (boot, SDK, save, game loop)
+  assets/             AssetManager, ModelLibrary, MaterialLibrary (GLB pipeline + caching + fallbacks)
+  config/             balance, sneakers, pets, missions, biomes, asset slots
+  core/               Game, state, input, save, audio, platform (CrazyGames SDK), render pipeline
+  debug/              debug panel (stripped from production)
+  fx/                 particles, speed FX, hatch scene, contact shadows
+  net/                multiplayer seam (offline no-op adapter today)
+  pets/               pet models, followers, eggs
+  player/             character, GLB character, sneakers, lobby/run controllers, camera
+  systems/            Economy, Progression
+  ui/                 HUD, panels, mobile controls, thumbnails
+  utils/              geometry helpers, labels, math
+  world/              lobby, run track, biome props, sky, posters
+assets/               production models (see assets/README.md for slot specs)
+  characters/ pets/ props/ (sneakers/ environment/ textures/ when added)
+  manifest.json       generated list of files the game may request (npm run assets)
+  CREDITS.md          authors, licences, attribution for every third-party file
+  licenses/           licence texts shipped with the build
+test/                 unit tests + GLB pipeline fixtures (test/fixtures/assets, never shipped)
+tools/                build, dev server, asset audit, fixtures, simulator, vendoring
 ```
 
-### Change log
+Generated, not committed: `node_modules/`, `lib/` (`npm run vendor`), `dist/` (`npm run build`).
 
-[Releases](https://github.com/mrdoob/three.js/releases)
+## Assets
 
+Real `.glb` models go under `assets/<category>/` using the slot names in `js/config/assets.js`; then run `npm run assets`. Any slot without a file falls back to the procedural model, so the game always runs. Every third-party file must be recorded in [`assets/CREDITS.md`](assets/CREDITS.md) with its licence, and CC-BY attributions must also appear in the in-game credits.
 
-[npm]: https://img.shields.io/npm/v/three
-[npm-url]: https://www.npmjs.com/package/three
-[build-size]: https://badgen.net/bundlephobia/minzip/three
-[build-size-url]: https://bundlephobia.com/result?p=three
-[npm-downloads]: https://img.shields.io/npm/dw/three
-[npmtrends-url]: https://www.npmtrends.com/three
-[deepscan]: https://deepscan.io/api/teams/16600/projects/19901/branches/525701/badge/grade.svg
-[deepscan-url]: https://deepscan.io/dashboard#view=project&tid=16600&pid=19901&bid=525701
-[discord]: https://img.shields.io/discord/685241246557667386
-[discord-url]: https://discord.gg/56GBJwAnUS
+Do not use real brands, logos or copied trademarked shoe designs.
 
+## Deploying to CrazyGames
+
+```bash
+npm run build
+cd dist && zip -r ../sneaker-rush-3d.zip . && cd ..
+```
+
+Upload the zip. `dist/` is self-contained (no CDN dependencies besides Google Fonts and the CrazyGames SDK, both optional at runtime).

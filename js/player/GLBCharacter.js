@@ -8,7 +8,8 @@
 // • Locomotion clips are time-scaled to the real ground speed to avoid foot sliding.
 // • Root motion on the hips is stripped (gameplay owns the position).
 // • Sneaker sockets are created automatically on the foot bones: in the bind pose each socket is
-//   aligned with the character's axes and placed on the ground under the ankle, so any game
+//   aligned with the character's axes and placed on the ground under the ankle (computed from the
+//   skin's bind pose, so rigs whose rest pose differs still line up), so any game
 //   sneaker (normalised to the same spec) fits every rig without hand-tuning.
 import * as THREE from 'three';
 import { CHARACTER, ASSET_OVERRIDES } from '../config/assets.js';
@@ -16,18 +17,16 @@ import { pickClip } from '../assets/ModelLibrary.js';
 import { damp } from '../utils/math.js';
 
 const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3();
-const lower = (s) => (s || '').toLowerCase();
+/** Name key used for every bone / mesh lookup: lower-case, alphanumerics only ('Foot.L', 'FootL', 'foot_l' → 'footl'). */
+const nameKey = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 function findBone(root, aliases) {
+  const keys = aliases.map(nameKey);
   let hit = null;
   root.traverse((o) => {
-    if (hit || !o.isBone) return;
-    const n = lower(o.name).replace(/\s/g, '');
-    if (aliases.includes(n)) hit = o;
+    if (!hit && o.isBone && keys.includes(nameKey(o.name))) hit = o;
   });
-  if (hit) return hit;
-  // looser: name contains "foot" + side marker
-  return null;
+  return hit;
 }
 
 export class GLBCharacter {
@@ -45,8 +44,9 @@ export class GLBCharacter {
     this.isGLB = true;
 
     // hide the model's own shoes (the game's sneakers replace them)
+    const hide = this.cfg.hideMeshes.map(nameKey);
     this.model.traverse((o) => {
-      if (o.isMesh && this.cfg.hideMeshes.some((h) => lower(o.name).includes(h))) o.visible = false;
+      if (o.isMesh && hide.some((h) => nameKey(o.name).includes(h))) o.visible = false;
       if (o.isMesh) o.frustumCulled = false; // skinned bounds don't follow animation
     });
 
@@ -101,15 +101,20 @@ export class GLBCharacter {
     this.group.updateMatrixWorld(true);
     const off = this.cfg.socketOffset || [0, 0, 0];
     const scale = this.cfg.shoeScale || 1;
+    const groundY = bindGroundY(this.model);
     this.sockets = {};
     for (const side of ['left', 'right']) {
       const bone = findBone(this.model, this.cfg.footBones[side]);
       const socket = new THREE.Object3D();
       socket.name = 'sneaker_socket_' + side;
       if (bone) {
-        _p.setFromMatrixPosition(bone.matrixWorld);
-        const desired = new THREE.Matrix4().compose(new THREE.Vector3(_p.x + off[0], off[1], _p.z + off[2]), new THREE.Quaternion(), new THREE.Vector3(scale, scale, scale));
-        _m.copy(bone.matrixWorld).invert().multiply(desired);
+        // Use the bone's BIND pose (what the skin was modelled in), not its rest node transform:
+        // many exports (e.g. Quaternius) have a rest pose that differs from the bind pose, which would
+        // leave the sneaker twisted relative to the skinned foot once the bone animates.
+        const bind = bindPoseWorld(this.model, bone);
+        _p.setFromMatrixPosition(bind);
+        const desired = new THREE.Matrix4().compose(new THREE.Vector3(_p.x + off[0], groundY + off[1], _p.z + off[2]), new THREE.Quaternion(), new THREE.Vector3(scale, scale, scale));
+        _m.copy(bind).invert().multiply(desired);
         _m.decompose(socket.position, socket.quaternion, socket.scale);
         bone.add(socket);
       } else {
@@ -177,6 +182,38 @@ export class GLBCharacter {
       this.lastPhase = ph;
     }
   }
+}
+
+const _bm = new THREE.Matrix4(), _box = new THREE.Box3();
+
+/**
+ * World matrix the bone would have in the skin's bind pose (current placement of the model).
+ * Skinned vertices render at bone.matrixWorld · boneInverse · bindMatrix · v, and unposed they sit at
+ * mesh.matrixWorld · v, so the bind-pose bone matrix is mesh.matrixWorld · bindMatrix⁻¹ · boneInverse⁻¹.
+ * Falls back to the current bone matrix for bones that no skin uses.
+ */
+function bindPoseWorld(root, bone) {
+  let out = null;
+  root.traverse((o) => {
+    if (out || !o.isSkinnedMesh) return;
+    const i = o.skeleton.bones.indexOf(bone);
+    if (i < 0) return;
+    out = new THREE.Matrix4().copy(o.matrixWorld)
+      .multiply(_bm.copy(o.bindMatrix).invert())
+      .multiply(_bm.copy(o.skeleton.boneInverses[i]).invert());
+  });
+  return out || bone.matrixWorld.clone();
+}
+
+/** Lowest point of the unposed (bind-pose) skinned geometry: the ground level the sockets are placed on. */
+function bindGroundY(root) {
+  let y = Infinity;
+  root.traverse((o) => {
+    if (!o.isSkinnedMesh) return;
+    if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+    y = Math.min(y, _box.copy(o.geometry.boundingBox).applyMatrix4(o.matrixWorld).min.y);
+  });
+  return Number.isFinite(y) ? y : 0;
 }
 
 /** Keep the hips' vertical bob but remove horizontal root motion (gameplay owns position). */

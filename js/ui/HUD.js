@@ -19,6 +19,7 @@ export class HUD {
       vignette: $('speed-vignette'),
     };
     this.shownMoney = game.state.money;
+    this.el.money.textContent = formatMoney(this.shownMoney); // show the saved balance immediately (updateLobby only redraws on change)
     this.shownReward = 0;
     this.lastTrackerKey = '';
     this.lastBoostKey = '';

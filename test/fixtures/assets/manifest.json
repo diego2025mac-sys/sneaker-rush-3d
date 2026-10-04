@@ -1,0 +1,37 @@
+{
+  "generated": "2026-10-04T19:40:19.800Z",
+  "files": [
+    {
+      "path": "characters/runner.glb",
+      "bytes": 600696
+    },
+    {
+      "path": "pets/cat.glb",
+      "bytes": 87184
+    },
+    {
+      "path": "pets/dog.glb",
+      "bytes": 95856
+    },
+    {
+      "path": "props/bench.glb",
+      "bytes": 7176
+    },
+    {
+      "path": "props/lamp.glb",
+      "bytes": 16688
+    },
+    {
+      "path": "props/tree.glb",
+      "bytes": 21040
+    },
+    {
+      "path": "sneakers/starter_canvas.glb",
+      "bytes": 261176
+    },
+    {
+      "path": "sneakers/street_runner.glb",
+      "bytes": 249980
+    }
+  ]
+}

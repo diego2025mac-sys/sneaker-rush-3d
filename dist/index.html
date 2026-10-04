@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#140f2e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Sneaker Rush 3D</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" tabindex="0"></canvas>
+
+    <div id="ui">
+      <div id="speed-vignette"></div>
+      <div id="flash"></div>
+      <div id="floating"></div>
+
+      <!-- ===== LOBBY HUD ===== -->
+      <div id="hud-lobby" class="hud">
+        <div id="top-left">
+          <div class="chip money-chip"><span class="ico">💵</span><span id="money">$0</span></div>
+          <div class="chip gem-chip"><span class="ico">💎</span><span id="gems">0</span></div>
+          <div class="chip stat-chip" id="speed-chip" title="Running speed from your sneakers"><span class="ico">👟</span><span id="speed-stat">22 km/h</span></div>
+          <div class="chip stat-chip" id="pet-chip" title="Cash-out multiplier from your pets"><span class="ico">🐾</span><span id="pet-stat">x1.00</span></div>
+          <div id="boosts"></div>
+        </div>
+        <div id="top-right">
+          <button class="icon-btn" id="btn-pets" title="My pets (I)">🐾<span class="badge hidden" id="pets-badge"></span></button>
+          <button class="icon-btn" id="btn-missions" title="Missions (M)">🎯<span class="badge hidden" id="missions-badge"></span></button>
+          <button class="icon-btn" id="btn-settings" title="Settings (Esc)">⚙️</button>
+        </div>
+        <div id="mission-tracker"></div>
+      </div>
+
+      <!-- ===== RUN HUD ===== -->
+      <div id="hud-run" class="hud hidden">
+        <div id="run-speed">
+          <div class="label">SPEED</div>
+          <div class="big" id="run-kmh">0</div><div class="unit">km/h</div>
+          <div class="meter"><div id="momentum-fill"></div></div>
+          <div class="sub" id="run-boost"></div>
+        </div>
+        <div id="run-center">
+          <div id="run-biome">CITY</div>
+          <div id="run-distance">0 M</div>
+          <div id="run-reward-wrap">
+            <div class="label">POTENTIAL REWARD</div>
+            <div id="run-reward">$0</div>
+            <div id="run-bonus">DISTANCE BONUS x1.00</div>
+          </div>
+        </div>
+        <div id="run-pets">
+          <div class="label">PETS</div>
+          <div class="big" id="run-petmult">x1.0</div>
+          <div class="unit">MONEY</div>
+          <div class="sub" id="run-boostmoney"></div>
+        </div>
+        <div id="run-next"></div>
+        <button id="btn-cashout"><span class="co-top">CASH OUT</span><span class="co-sub" id="cashout-sub">$0</span><small class="key">C</small></button>
+        <button id="btn-autorun" class="round-btn" title="Auto-run (R)">AUTO<br/>RUN</button>
+      </div>
+
+      <div id="milestone" class="hidden"></div>
+      <div id="banner" class="hidden"></div>
+      <div id="toasts"></div>
+      <div id="tutorial" class="hidden"></div>
+      <div id="cam-hint" class="hidden"></div>
+      <div id="prompt" class="hidden"></div>
+
+      <div id="panel-wrap" class="hidden"><div id="panel"></div></div>
+      <div id="hatch-ui" class="hidden"></div>
+      <div id="cashout-card" class="hidden"></div>
+
+      <div id="mobile-controls" class="hidden">
+        <div id="joy-zone"><div id="joy-base"><div id="joy-knob"></div></div></div>
+        <div id="look-zone"></div>
+        <button id="btn-jump" class="round-btn big">⤒</button>
+        <button id="btn-use" class="round-btn big hidden">OPEN</button>
+      </div>
+
+      <div id="debug" class="hidden"></div>
+      <div id="rotate-hint" class="hidden">Rotate your device for the best experience</div>
+    </div>
+
+    <div id="loading">
+      <div class="logo">
+        <div class="logo-top">SNEAKER</div>
+        <div class="logo-bottom">RUSH <span>3D</span></div>
+      </div>
+      <div class="load-bar"><div id="load-fill"></div></div>
+      <div id="load-text">Lacing up…</div>
+    </div>
+    <noscript>Sneaker Rush 3D needs JavaScript enabled.</noscript>
+  </div>
+  <script type="module" src="js/game.min.js"></script>
+</body>
+</html>

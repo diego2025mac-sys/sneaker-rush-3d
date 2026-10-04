@@ -1,0 +1,29 @@
+{
+  "generated": "2026-10-04T20:32:43.350Z",
+  "files": [
+    {
+      "path": "characters/runner.glb",
+      "bytes": 1456760
+    },
+    {
+      "path": "pets/cat.glb",
+      "bytes": 43432
+    },
+    {
+      "path": "pets/dog.glb",
+      "bytes": 851196
+    },
+    {
+      "path": "props/bench.glb",
+      "bytes": 21952
+    },
+    {
+      "path": "props/lamp.glb",
+      "bytes": 23324
+    },
+    {
+      "path": "props/tree.glb",
+      "bytes": 2540428
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "sneaker-rush-3d",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sneaker Rush 3D - a 3D running / progression simulator for the browser (CrazyGames-ready).",
+  "scripts": {
+    "dev": "node tools/serve.mjs . 5173",
+    "build": "node tools/build.mjs",
+    "preview": "node tools/serve.mjs dist 5174",
+    "sim": "node tools/sim.mjs",
+    "assets": "node tools/assets.mjs assets",
+    "vendor": "node tools/vendor.mjs",
+    "fixtures": "node tools/make-fixtures.mjs",
+    "test": "node test/economy.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "three": "^0.170.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

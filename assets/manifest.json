@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-04T20:32:43.350Z",
+  "generated": "2026-10-04T21:57:55.351Z",
   "files": [
     {
       "path": "characters/runner.glb",
@@ -24,6 +24,10 @@
     {
       "path": "props/tree.glb",
       "bytes": 2540428
+    },
+    {
+      "path": "sneakers/street_runner.glb",
+      "bytes": 527012
     }
   ]
 }

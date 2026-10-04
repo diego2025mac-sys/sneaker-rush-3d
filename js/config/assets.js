@@ -48,12 +48,17 @@ export const CHARACTER = {
   walkUntil: 2.6,
   runUntil: 7.5,
   stepPhases: [0.0, 0.5],   // normalised clip times where a foot plants (footstep sounds)
+  // Bone/mesh names are compared after normalisation: lower-case, every non-alphanumeric removed
+  // (three.js strips '.' from glTF node names, so Blender's `Foot.L` arrives as `FootL`;
+  // `foot_l`, `Foot.L`, `FootL` and `foot-l` all normalise to `footl`).
   footBones: {
-    left: ['foot_l', 'foot.l', 'leftfoot', 'mixamorigleftfoot', 'mixamorig:leftfoot', 'def-foot.l', 'l_foot', 'foot_left'],
-    right: ['foot_r', 'foot.r', 'rightfoot', 'mixamorigrightfoot', 'mixamorig:rightfoot', 'def-foot.r', 'r_foot', 'foot_right'],
+    left: ['footl', 'leftfoot', 'lfoot', 'footleft', 'mixamorigleftfoot', 'deffootl'],
+    right: ['footr', 'rightfoot', 'rfoot', 'footright', 'mixamorigrightfoot', 'deffootr'],
   },
-  hipsBones: ['hips', 'mixamorighips', 'mixamorig:hips', 'pelvis', 'root'],
-  hideMeshes: ['shoe', 'shoes', 'sneaker', 'footwear'], // the character's own shoes are hidden; game sneakers attach to the feet
+  hipsBones: ['hips', 'mixamorighips', 'pelvis', 'root'],
+  // the character's own shoes are hidden (substring match on the normalised mesh name); game sneakers attach to the feet.
+  // `casualfeet` = Quaternius "Casual_Feet" (shoe-only mesh; the legs are a separate mesh and stay visible)
+  hideMeshes: ['shoe', 'sneaker', 'footwear', 'casualfeet'],
   shoeScale: 1.12,
 };
 
@@ -74,6 +79,7 @@ export const FUTURE_SLOTS = [
 
 /** Per-file tuning without re-exporting (rotate a model that faces the wrong way, nudge sockets…). */
 export const ASSET_OVERRIDES = {
+  'sneakers/street_runner.glb': { rotateY: -90 }, // source model's toe points +X
   // 'sneakers/starter_canvas.glb': { rotateY: 90 },
   // 'characters/runner.glb': { clipSpeeds: { run: 4.2 }, shoeScale: 1.05, socketOffset: [0, 0, 0.02] },
 };

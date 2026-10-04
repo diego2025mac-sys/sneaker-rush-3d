@@ -79,6 +79,7 @@ export const FUTURE_SLOTS = [
 
 /** Per-file tuning without re-exporting (rotate a model that faces the wrong way, nudge sockets…). */
 export const ASSET_OVERRIDES = {
+  'sneakers/street_runner.glb': { rotateY: -90 }, // source model's toe points +X
   // 'sneakers/starter_canvas.glb': { rotateY: 90 },
   // 'characters/runner.glb': { clipSpeeds: { run: 4.2 }, shoeScale: 1.05, socketOffset: [0, 0, 0.02] },
 };

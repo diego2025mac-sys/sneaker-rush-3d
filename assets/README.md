@@ -29,6 +29,9 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 
 ## First migration target (needed now)
 
+Status: `characters/runner.glb`, `sneakers/street_runner.glb`, `pets/dog.glb`, `pets/cat.glb` and the three props are in place (see `CREDITS.md`).
+Still missing: **`sneakers/starter_canvas.glb`** (the slot keeps the procedural model until a suitable licensed asset is added).
+
 | File | What | Spec |
 |---|---|---|
 | `characters/runner.glb` | Rigged stylized runner (gender-neutral or two variants later) | Humanoid rig. Must include the clips **Idle, Walk, Run** (Sprint, Celebrate/Victory, Jump, Stumble optional). Animations in place (root motion is stripped automatically). ~1.8 m tall, ≤ 30k tris, ≤ 2 materials. Foot bones named like `foot_l/foot_r`, `LeftFoot/RightFoot` or Mixamo `mixamorig:LeftFoot`. Its own shoe mesh should be a separate mesh named `shoes` (it gets hidden, because game sneakers attach to the feet). |

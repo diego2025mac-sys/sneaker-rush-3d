@@ -162,6 +162,9 @@ export class Game {
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+    // after boot, fetch the remaining sneaker models in the background (only files listed in the
+    // manifest are requested) so shop pedestals switch to the imported models via 'models:ready'
+    this.library.preloadSneakers();
   }
 
   // --------------------------------------------------------------- events --

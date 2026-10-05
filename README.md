@@ -68,7 +68,7 @@ Generated, not committed: `node_modules/`, `lib/` (`npm run vendor`), `dist/` (`
 
 Real `.glb` models go under `assets/<category>/` using the slot names in `js/config/assets.js`; then run `npm run assets`. Any slot without a file falls back to the procedural model, so the game always runs. Every third-party file must be recorded in [`assets/CREDITS.md`](assets/CREDITS.md) with its licence, and CC-BY attributions must also appear in the in-game credits.
 
-Do not use real brands, logos or copied trademarked shoe designs. All new art follows [`ART_DIRECTION.md`](ART_DIRECTION.md) (one KayKit-compatible stylized look); the first commissioned batch is specified in [`ASSET_SPEC_BATCH1.md`](ASSET_SPEC_BATCH1.md). Retired off-style imports are kept, unshipped, in `reference/retired-assets/`.
+Do not use real brands, logos or copied trademarked shoe designs. The art direction is being re-selected from free assets; see [`ART_DIRECTION.md`](ART_DIRECTION.md) (KayKit is no longer required; `ASSET_SPEC_BATCH1.md` is superseded). Retired off-style imports are kept, unshipped, in `reference/retired-assets/`.
 
 ## Deploying to CrazyGames
 

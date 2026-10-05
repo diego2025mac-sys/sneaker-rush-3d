@@ -1,90 +1,48 @@
-# Sneaker Rush 3D — art direction & asset migration plan
+# Sneaker Rush 3D — art direction
 
-Status: **approved** (2026-10-05) — the single visual direction for the game. Gameplay, balance, movement and economy are out of scope for every step below.
+Status: **under review (2026-10-05).** KayKit is **no longer** the target direction. Three free art-direction options are documented in §4; the owner chooses one before any asset integration. Gameplay, balance, movement, camera and economy are out of scope for every art change.
 
-## 1. Audit: where the style is inconsistent today
+## 1. Constraints
 
-Evidence was captured in-game (same camera presets, procedural fallback vs. imported GLBs) and in a neutral studio lineup at real-world relative scale.
+- **Free assets only.** No paid packs, no commissions.
+- **Licences:** CC0 / public domain, or permissive licences that explicitly allow commercial web games; CC-BY only when attribution is manageable. **Rejected:** unclear licences, ripped or re-uploaded paid content, non-commercial (NC) licences, branded/trademarked assets.
+- **Consistency over detail:** one coherent look (at most two families whose styles genuinely match). Never mix photoreal, angular low-poly and flat assets again.
+- Priorities, in order: overall visual quality → consistency → attractive casual-game look → good characters and pets → sneaker compatibility.
+- Use the existing GLB pipeline (`js/assets/`, `js/config/assets.js`); skeleton differences are solved with config aliases, not rewrites.
 
-| Asset | Current source | Style family | Problem |
+## 2. History
+
+1. First import pass (Quaternius runner/Shiba, Poly cat, photoreal Shopify sneaker, Quaternius props) mixed five style families; it was retired to `reference/retired-assets/`.
+2. A KayKit-only direction was approved, then dropped: no free casual runner, sneakers or pets exist in that style. The KayKit tree, bench and lamp remain in `assets/props/` (CC0) as references until the new direction is chosen. `ASSET_SPEC_BATCH1.md` (KayKit-specific) is superseded.
+
+## 3. Source audit (reachable from the build environment: GitHub + npm)
+
+| Source | Author / licence (verified from the pack's own licence file) | Useful content | Style | Rigged / animated | Verdict |
+|---|---|---|---|---|---|
+| Kenney 3D catalogue (mirror `series-ai/jam-ready-assets`, every pack with its original `License.txt`) | Kenney — **CC0** | Mini Characters (12), Mini Skate (skater boy/girl), Blocky Characters (18), **Cube Pets (24 animals)**, Mini Market (shop shelves, displays, register, employee), City Kit Commercial/Suburban/Roads, Nature Kit (329), Furniture Kit (140), Car/Toy Car kits | Clean flat-colour low-poly, one colormap atlas per pack | Characters skinned (Mini) or rigid-part (Blocky); pets rigid-part animated | **Usable** |
+| Quaternius Ultimate Animated Character Pack, Nov 2019 (original release folder incl. `License.txt`, in `BMOxOMB/Proyecto_ProgramacionConPatrones`) | Quaternius — **CC0** | 50 chibi characters incl. Casual 1/2/3 male+female, Worker, Suit; glTF | Chibi, rounded faceted, flat colours; skin exported near-black (recolour needed) | Skinned, `Foot.L/Foot.R`, Idle/Walk/Run/Jump/Victory | **Usable** |
+| Quaternius full catalogue (OpenUSD copy `chibifire-stages/quaternius-stage`, CC0 licence file) | Quaternius — **CC0** | ~80 packs: Ultimate Modular Characters (incl. sneaker *Feet* meshes), Downtown City MegaKit, Stylized Nature MegaKit, Furniture, Home Interior, Cars, Animated Animals, Cube World | Varies strongly by pack and year | Yes (various) | Usable after USD→GLB conversion (Blender `bpy` / `usd-core` are on PyPI, not yet tested) |
+| KayKit official (`KayKit-Game-Assets`) | Kay Lousberg — CC0 | Adventurers, Skeletons, props | Chunky clay-toy | Yes | Kept only as reference; no casual runner/pets/sneakers |
+| GDQuest Sophia | GDQuest — **CC-BY-NC-SA 4.0** | Stylized girl, 19k tris | Stylized | Yes | **Rejected (non-commercial)** |
+| `nginetechnologies/zoo-kay-lousberg` | none stated; contains paid-tier source files | KayKit extras | — | — | **Rejected (unclear licence / paid content)** |
+| 100Avatars / Open Source Avatars | CC0 claimed; per-collection licence could not be verified | VRM avatars | Stylized | Rig only, no animations | Not used (licence unverifiable, no animations) |
+| Khronos Materials Variants Shoe | Shopify — CC-BY 4.0 | One realistic sneaker | Photoreal | — | Geometry-only fallback for sneakers (see option B) |
+
+## 4. Options (owner decides)
+
+See the comparison in the PR/discussion for screenshots. Summary:
+
+| | A — Kenney Mini family | B — Quaternius chibi + Kenney world | C — Kenney Blocky family |
 |---|---|---|---|
-| Lobby, shop, hatchery, portal, track, signage (procedural) | game code | Clean "neon toy plaza": flat saturated colours, rounded blocks, neon accents | Coherent, but primitive-built and cheap-looking up close |
-| Player, pets, sneakers (procedural fallbacks) | game code | Voxel-like chunky toys | Cheap-looking, stepped surfaces |
-| `characters/runner.glb` | Quaternius, CC0 | Faceted low-poly, realistic proportions, muted purple | Thin and generic next to the chunky world; no chibi appeal |
-| `pets/dog.glb` (Shiba) | Quaternius, CC0 | Faceted, realistic proportions | Adult dog proportions, not "cute pet" |
-| `pets/cat.glb` | Poly by Google, CC-BY 3.0 | Faceted, flat grey | Third faceting style; lowest quality asset |
-| `sneakers/street_runner.glb` | Shopify, CC-BY 4.0 | **Photoreal** PBR textures | High quality but a completely different rendering style |
-| Previous `props/tree.glb` | Quaternius, CC0 | Painted alpha-card foliage, semi-realistic | Fourth style; 2.5 MB |
-| Previous `props/bench.glb`, `props/lamp.glb` | Quaternius, CC0 | Rustic park furniture (brown wood, thin grey metal) | Palette clashes with the neon plaza |
+| Player | Kenney Mini Skate skater boy/girl (Mini Characters for variety) | Quaternius Casual chibi (skin recoloured) | Kenney Blocky Characters (custom streetwear skins possible) |
+| Pets | Kenney Cube Pets | Kenney Cube Pets | Kenney Cube Pets |
+| Environment / shop | Kenney Mini Market, City kits, Nature, Furniture | Same Kenney packs (+ selected Quaternius packs after conversion) | Same Kenney packs |
+| Sneakers | Original chunky sneaker kit authored in Blender from the Kenney skater's foot shape | Base from Quaternius Modular Characters feet (CC0) → original variants; fits the existing `Foot.L/R` sockets | Painted on skins or block shoes |
+| Ranking | #2 | **#1 (recommended)** | #3 |
 
-Result: **five style families in one scene**. The imported slice was technically better per asset but visually *less* coherent than the procedural version.
+## 5. Rules that stay valid whatever is chosen
 
-## 2. Chosen direction: "chunky toy" stylized (KayKit-compatible)
-
-One art direction for everything: the look of [KayKit](https://kaylousberg.com) packs by Kay Lousberg — smooth bevelled "clay toy" shapes, chibi proportions, one shared gradient-atlas texture — pushed toward this game's neon-plaza palette.
-
-Why this one:
-- It is closest to what the procedural world already is (rounded, saturated, toy-like), so environment, UI and FX don't need re-styling.
-- It reads well at small sizes and on mobile, and matches the casual-simulator audience on CrazyGames.
-- A large CC0 library already exists in exactly this style (City Builder Bits, Furniture Bits, Medieval Hexagon nature, Prototype Bits, Character packs on a shared rig with 75+ animations), published officially at https://github.com/KayKit-Game-Assets. Anything commissioned can be briefed as "KayKit-compatible", which is a precise, checkable brief.
-
-### Style rules (apply to every asset, sourced or commissioned)
-
-| Rule | Spec |
-|---|---|
-| Shapes | Chunky, soft, bevelled edges; no thin parts under ~4 cm at game scale; readable silhouette at 10 m |
-| Proportions | Characters chibi: head ≈ 1/3 of body height, big hands and feet; pets: big head, short legs, "plush toy" |
-| Surface | **No photo textures, no normal/detail maps.** Colour comes from a small gradient-swatch atlas (≤ 512²) or flat vertex colours. Metalness 0, roughness 0.4–0.6 |
-| Palette | Warm pastel bases (peach, cream, mint, sky) + the game's neon accents (pink `#ff3d7f`, cyan `#2ec4f1`, violet `#b45cff`, yellow `#ffd23f`) used sparingly, as emissive trims on premium items |
-| Lighting | Unchanged (current render pipeline); emissive only on neon trims, rarity glows and lamp heads |
-| Budgets | Character ≤ 8k tris; sneaker ≤ 3k tris; pet ≤ 4k tris; prop ≤ 1.5k tris; one material per asset where possible |
-| Format | `.glb`, Y-up, metres, faces +Z, origin on the ground; meshopt compression allowed |
-| Brands | No real brands, logos or recognisable trademarked shoe designs (no stripes/swooshes/jumpman-like marks) |
-
-### Sneaker design language (all 14 tiers)
-
-Sneakers are the hero items, so they get their own rules:
-- Oversized "toy" proportions (≈1.25× a real shoe relative to the foot), sole thickness grows with tier.
-- **One modular base kit** (outsole, midsole, upper, tongue, laces, heel tab, collar as separate named meshes), so tiers share topology and stay consistent; tiers differ by silhouette pieces + material/emissive treatment.
-- Progression readable at a glance: canvas/fabric → mesh/knit → plastic overlays → glowing soles/trims → cosmic/energy materials.
-- One right shoe per file (the game mirrors the left), sole flat at y = 0, toe → +Z.
-
-## 3. Migration plan
-
-| Area | Plan | Source | Status |
-|---|---|---|---|
-| **Props (tree, bench, lamp)** | KayKit tree_single_B, bench, streetlight | KayKit CC0 (free) | **Done in the first slice** |
-| **Player character** | One KayKit-compatible chibi runner (casual athletic outfit, no shoes or separate `shoes` mesh), built on the **KayKit standard rig** so it reuses its locomotion set (Idle, Walking_A, Running_A/B, Jump_*, Cheer…) and foot bones `foot.l`/`foot.r` | **Commission** (or a KayKit paid character pack if one fits — verify contents before buying) | Missing |
-| **Sneakers (14)** | Modular kit + 14 tier variants following §2 | **Commission** (no CC0 set exists in this style) | Missing (Street Runner photoreal stays as a placeholder) |
-| **Pets** | 12 species (`dog`, `cat`, `bunny`, `pigeon`, `fox`, `robot_dog`, `tiger`, `dragon`, `unicorn`, `phoenix`, `bear`, `slime`), plush-toy proportions, Idle + Walk clips; finishes stay material variants in code | **Commission** (dog + cat first) | Missing |
-| **Sneaker shop** | Retail fixtures in the same style: slatwall panel, wall shoe shelf, display pedestal (round + square), try-on bench, counter, mirror, neon sign frame, shoe box | **Commission** (KayKit Furniture Bits is home furniture; usable only for filler: rugs, cactus, cabinets) | Missing |
-| **Pet hatchery** | Egg pedestal, incubator dome, hatch machine, egg model (finishes as materials), pet bed | Commission; filler from KayKit Furniture/Prototype Bits | Missing |
-| **Lobby environment** | Background buildings from KayKit City Builder Bits (`building_A`–`H`) re-tinted toward the palette; planters, bushes, bins, hydrants, traffic bits from the same pack; portal, track and signage stay procedural (they are already on-style) | KayKit CC0 (free) | Next, after the slice is approved |
-
-### Order of work
-
-1. ~~Props~~ (done).
-2. **Commission batch 1 (the rest of the first slice):** runner character, Starter Canvas, Street Runner, dog, cat, shop display set (slatwall, wall shelf, pedestal, try-on bench).
-3. Integrate batch 1 → in-game comparison against procedural. **Gate:** continue only if the slice is clearly better.
-4. Environment from KayKit City Builder Bits (free) + hatchery fixtures.
-5. Commission batch 2: remaining 12 sneakers (same kit), remaining 10 pets.
-
-### Interim look (done)
-
-The off-style imports (Quaternius runner and Shiba, Poly cat, photoreal Street Runner) were removed from the shipped game and kept in `reference/retired-assets/` with their credits. Those slots show the procedural toys until Batch 1 arrives; the KayKit tree, bench and lamp stay.
-
-## 4. Commission brief (copy-paste)
-
-Exact sizes, budgets, bone/clip names, file names and destinations for Batch 1: **`ASSET_SPEC_BATCH1.md`**.
-
-> Stylized low-poly game assets for a casual browser running/pet simulator, in the **KayKit style by Kay Lousberg** (chunky bevelled shapes, chibi proportions, single gradient atlas texture ≤ 512², no photo textures or normal maps, metalness 0). Deliver `.glb` (glTF 2.0), Y-up, metres, facing +Z, origin on the ground, plus source `.blend`. Full commercial rights for web/mobile distribution. No real brands or logos.
->
-> **Batch 1**
-> 1. **Runner character** — gender-neutral or male+female variant, casual athletic outfit (hoodie or tee, joggers/shorts, cap optional), ~1.8 m game height, ≤ 8k tris, **rigged on the KayKit standard character rig** (same bone names, incl. `foot.l`/`foot.r`, `hips`) so existing KayKit animations apply; feet as sock/bare feet or shoes as a separate mesh named `shoes`.
-> 2. **Sneaker kit + 2 sneakers** — modular parts (outsole, midsole, upper, tongue, laces, heel tab, collar; separate meshes and named materials `sole_rubber`, `midsole`, `upper_fabric`, `laces`…), one right shoe per file, ≤ 3k tris each: **Starter Canvas** (white canvas low-top, vulcanised sole, rubber toe cap) and **Street Runner** (grey knit everyday runner with orange accents, more sculpted sole, visibly more premium). Original designs only.
-> 3. **Pets: dog (puppy) and cat (kitten)** — plush-toy proportions, ≤ 4k tris, rigged with looping `Idle` and `Walk`, ~0.7 m tall.
-> 4. **Sneaker shop display set** — slatwall panel (2 m), floating wall shoe shelf, round display pedestal, square plinth, try-on bench, counter; ≤ 1.5k tris each, palette slots for the game's neon accents.
->
-> **Batch 2 (after approval):** 12 more sneakers on the same kit (Retro High, Court Classic, Urban Dunk, Air Sprint, Velocity X, Neon Runner, Carbon Racer, Hyper Boost, Plasma Kicks, Cosmic Runner, Galaxy High, Quantum Sneakers), 10 more pet species, hatchery set.
-
-Slot names, file paths and fit sizes are in `js/config/assets.js` and `assets/README.md`; licences go in `assets/CREDITS.md`.
+- One right sneaker per file, toe → +Z, sole on y = 0; the game mirrors the left foot.
+- No real brands, logos or recognisable trademarked shoe designs.
+- Every file gets a row in `assets/CREDITS.md` before it is committed; CC-BY attributions also go in the in-game credits.
+- Visual changes are validated in-game against the procedural version from the same camera presets before they replace it.

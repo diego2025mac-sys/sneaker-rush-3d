@@ -13,7 +13,7 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 
 ## Global rules (all models)
 
-- **Art direction:** one KayKit-compatible "chunky toy" look for everything (`ART_DIRECTION.md`). Do not mix packs or styles.
+- **Art direction:** one coherent look for everything, chosen from free assets (`ART_DIRECTION.md`; KayKit is no longer required). Do not mix packs or styles.
 - **Format:** binary glTF 2.0 (`.glb`), meshopt compression allowed (Draco, Meshopt and KTX2/Basis are all supported by the loader).
 - **Units:** metres. **Up:** +Y. **Forward:** +Z. Origin on the ground. The auto-fit corrects scale and origin, and `ASSET_OVERRIDES` (in `js/config/assets.js`) can rotate a model that faces the wrong way.
 - **Materials:** metallic-roughness, metalness 0, roughness 0.4–0.6. Colour from one gradient-swatch atlas (≤ 512², ≤ 1024² for the character) or vertex colours. **No photo textures, no normal/detail maps.** Emissive only for neon trims.
@@ -30,7 +30,7 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 | `props/shop_*.glb` (shop display set) | **Empty — Batch 1** (procedural shop shown; placement code is wired when the files arrive) |
 
 The previous off-style imports are kept for reference in `reference/retired-assets/` (not shipped).
-**Batch 1 deliverables, sizes, budgets, bone/clip names and file names: [`../ASSET_SPEC_BATCH1.md`](../ASSET_SPEC_BATCH1.md).**
+The previous KayKit Batch 1 spec ([`../ASSET_SPEC_BATCH1.md`](../ASSET_SPEC_BATCH1.md)) is superseded; new specs follow once a direction is chosen.
 
 Optional:
 

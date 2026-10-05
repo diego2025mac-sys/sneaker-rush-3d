@@ -1,5 +1,7 @@
 # Batch 1 asset specification
 
+> **Superseded (2026-10-05).** This spec targeted the KayKit direction, which was dropped (see `ART_DIRECTION.md`). It is kept for reference only; slot paths and the general rules (one right shoe, toe +Z, sole at y = 0, no brands) still apply.
+
 Batch 1 sets the final visual quality bar for the whole game. Style: KayKit-compatible "chunky toy" (`ART_DIRECTION.md`). Six deliverables:
 
 1. Runner character · 2. Starter Canvas · 3. Street Runner · 4. Puppy · 5. Kitten · 6. Sneaker-shop display set

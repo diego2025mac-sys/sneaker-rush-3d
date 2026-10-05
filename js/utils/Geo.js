@@ -32,7 +32,7 @@ export const G = {
   ico: (detail = 0) => cached('ico' + detail, () => new THREE.IcosahedronGeometry(0.5, detail)),
   sphere: (w = 8, h = 6) => cached('sph' + w + '_' + h, () => new THREE.SphereGeometry(0.5, w, h)),
   hemi: (w = 10, h = 4) => cached('hemi' + w + '_' + h, () => new THREE.SphereGeometry(0.5, w, h, 0, Math.PI * 2, 0, Math.PI / 2)),
-  torus: (r = 0.4, t = 0.1, rs = 6, ts = 12) => cached(`tor${r}_${t}_${rs}_${ts}`, () => new THREE.TorusGeometry(r, t, rs, ts)),
+  torus: (r = 0.4, t = 0.1, rs = 6, ts = 12, arc = Math.PI * 2) => cached(`tor${r}_${t}_${rs}_${ts}${arc === Math.PI * 2 ? '' : '_' + arc}`, () => new THREE.TorusGeometry(r, t, rs, ts, arc)),
   oct: () => cached('oct', () => new THREE.OctahedronGeometry(0.5, 0)),
   dodec: () => cached('dodec', () => new THREE.DodecahedronGeometry(0.5, 0)),
   /** bulged barrel body, base at y=0, height 1, max radius 0.5 */

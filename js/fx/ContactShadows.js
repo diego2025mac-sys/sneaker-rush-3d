@@ -10,8 +10,10 @@ function texture() {
   c.width = c.height = 128;
   const g = c.getContext('2d');
   const r = g.createRadialGradient(64, 64, 4, 64, 64, 62);
-  r.addColorStop(0, 'rgba(0,0,0,0.85)');
-  r.addColorStop(0.45, 'rgba(0,0,0,0.45)');
+  // dense core right under the feet (contact) with a long soft falloff
+  r.addColorStop(0, 'rgba(0,0,0,0.95)');
+  r.addColorStop(0.22, 'rgba(0,0,0,0.7)');
+  r.addColorStop(0.55, 'rgba(0,0,0,0.25)');
   r.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = r;
   g.fillRect(0, 0, 128, 128);

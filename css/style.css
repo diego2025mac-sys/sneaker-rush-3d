@@ -56,11 +56,12 @@ button { font-family: var(--title); cursor: pointer; border: none; color: #fff; 
 #top-right { position: absolute; top: calc(12px + var(--safe-top)); right: 12px; display: flex; gap: 8px; }
 #boosts { display: flex; flex-direction: column; gap: 6px; }
 .boost-chip { font-size: 15px; background: rgba(57, 255, 136, 0.18); border-color: rgba(57, 255, 136, 0.5); }
-#mission-tracker { position: absolute; top: calc(70px + var(--safe-top)); right: 12px; width: 260px; display: flex; flex-direction: column; gap: 6px; }
-.mt-item { background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 7px 10px; font-size: 14px; font-weight: 800; pointer-events: auto; cursor: pointer; }
+#mission-tracker { position: absolute; top: calc(70px + var(--safe-top)); right: 12px; width: 210px; display: flex; flex-direction: column; gap: 4px; opacity: 0.88; transition: opacity 0.2s; }
+#mission-tracker:hover { opacity: 1; }
+.mt-item { background: rgba(20, 16, 44, 0.62); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px; padding: 4px 8px 5px; font-size: 12px; font-weight: 800; line-height: 1.25; pointer-events: auto; cursor: pointer; }
 .mt-item.done { border-color: var(--green); background: rgba(20, 70, 45, 0.9); animation: glowg 1.2s infinite; }
 @keyframes glowg { 50% { box-shadow: 0 0 14px rgba(57, 255, 136, 0.6); } }
-.mt-bar { height: 6px; border-radius: 3px; background: rgba(0, 0, 0, 0.4); margin-top: 5px; overflow: hidden; }
+.mt-bar { height: 4px; border-radius: 2px; background: rgba(0, 0, 0, 0.4); margin-top: 3px; overflow: hidden; }
 .mt-bar > div { height: 100%; background: var(--yellow); border-radius: 3px; }
 .mt-item.done .mt-bar > div { background: var(--green); }
 

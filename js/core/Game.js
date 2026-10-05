@@ -113,6 +113,7 @@ export class Game {
       ? new GLBCharacter(this.scene, this.library, charTemplate, { sneaker: this.state.sneakers.equipped })
       : new Character(this.scene, { sneaker: this.state.sneakers.equipped }, this.library);
     this.logPlayerAsset(!!charTemplate);
+    this.lobby.viewer = this.character.position;
     this.shadows = new ContactShadows(this.scene);
     this.charShadow = this.shadows.create(0.55);
     this.character.anim.onStep = (speed) => this.audio.play('step', { vol: Math.min(1.4, 0.5 + speed / 20) });

@@ -76,7 +76,7 @@ export const PLAYER = {
 };
 
 export const CAMERA = {
-  distance: 6.2,
+  distance: 4.7,          // lobby follow distance (≈25% closer than before: player and pets read larger)
   runDistance: 7.2,
   minDistance: 3.5,
   maxDistance: 12,

@@ -326,9 +326,7 @@ export class Panels {
            <b>C</b> / <b>Enter</b> cash out • <b>R</b> auto-run • <b>E</b> open nearby shop • <b>I</b> pets • <b>M</b> missions • <b>Esc</b> settings`}
         </div>
         <div class="controls-help" style="font-size:12px">
-          <b>Credits</b> 3D models: character, Shiba Inu, tree, bench and street light by Quaternius (CC0) ·
-          "Cat" by Poly by Google, licensed under CC-BY 3.0 · via poly.pizza ·
-          Street Runner sneaker: "Materials Variants Shoe" © 2021 Shopify, licensed under CC-BY 4.0, modified (single colour variant, reduced mesh, compressed textures)
+          <b>Credits</b> 3D models: tree, bench and street light by Kay Lousberg / KayKit (CC0)
         </div>
         <div class="set-row" style="border:none;margin-top:12px">
           <span style="color:var(--pink)">Reset all progress</span>

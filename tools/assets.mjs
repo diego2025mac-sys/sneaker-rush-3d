@@ -19,7 +19,8 @@ files.sort((a, b) => a.path.localeCompare(b.path));
 writeFileSync(join(root, 'manifest.json'), JSON.stringify({ generated: new Date().toISOString(), files }, null, 2) + '\n');
 
 // ---- audit
-const BUDGET = { 'sneakers/': 15000, 'pets/': 12000, 'characters/': 30000, 'props/': 8000, 'environment/': 60000 };
+// triangle budgets from ART_DIRECTION.md / ASSET_SPEC_BATCH1.md (KayKit-style chunky low-poly)
+const BUDGET = { 'sneakers/': 3000, 'pets/': 4000, 'characters/': 8000, 'props/': 1500, 'environment/': 20000 };
 function glbJson(path) {
   const b = readFileSync(path);
   if (b.readUInt32LE(0) !== 0x46546c67) return JSON.parse(b.toString('utf8')); // .gltf

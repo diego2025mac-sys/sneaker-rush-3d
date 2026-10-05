@@ -13,35 +13,24 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 
 ## Global rules (all models)
 
-- **Format:** binary glTF 2.0 (`.glb`). Optimize before committing:
+- **Art direction:** one KayKit-compatible "chunky toy" look for everything (`ART_DIRECTION.md`). Do not mix packs or styles.
+- **Format:** binary glTF 2.0 (`.glb`), meshopt compression allowed (Draco, Meshopt and KTX2/Basis are all supported by the loader).
+- **Units:** metres. **Up:** +Y. **Forward:** +Z. Origin on the ground. The auto-fit corrects scale and origin, and `ASSET_OVERRIDES` (in `js/config/assets.js`) can rotate a model that faces the wrong way.
+- **Materials:** metallic-roughness, metalness 0, roughness 0.4–0.6. Colour from one gradient-swatch atlas (≤ 512², ≤ 1024² for the character) or vertex colours. **No photo textures, no normal/detail maps.** Emissive only for neon trims.
+- **Licensing:** CC0, a commissioned work-for-hire, or a licence that allows commercial web distribution (plus attribution if required). No real brands, logos or copied trademarked shoe designs. Record every file in `CREDITS.md` before committing it.
 
-  ```bash
-  npx @gltf-transform/cli optimize in.glb out.glb --compress meshopt --texture-compress webp --texture-size 1024
-  ```
+## Current status
 
-  Draco, Meshopt and KTX2/Basis are all supported by the loader.
-- **Units:** metres. **Up:** +Y. **Forward:** +Z. The auto-fit corrects scale and origin, and `ASSET_OVERRIDES` can rotate a model that faces the wrong way.
-- **Materials:** PBR metallic-roughness: baseColor (sRGB), normal, ORM/roughness/metalness (linear), emissive (sRGB).
-  - Name materials by surface (`sole_rubber`, `upper_fabric`, `eyelet_metal`, `window_glass`, `trim_neon`…). The game tunes roughness and metalness from these keywords if the exporter loses them.
-  - Share materials across meshes. Use a 1024² texture max (512² for pets and props) and texture atlases where possible.
-- **One consistent art direction for every asset:** stylized, clean, slightly chunky proportions, saturated but not neon-everything. Think premium casual mobile/console simulator. Do not mix packs with different styles.
-- **Licensing:** CC0 or a licence that allows commercial web distribution, plus attribution if required. No real brands, logos or copied trademarked shoe designs.
+| Slot | State |
+|---|---|
+| `props/tree.glb`, `props/bench.glb`, `props/lamp.glb` | KayKit (CC0), shipped |
+| `characters/runner.glb` | **Empty — Batch 1** (procedural runner shown) |
+| `sneakers/starter_canvas.glb`, `sneakers/street_runner.glb` | **Empty — Batch 1** (procedural sneakers shown) |
+| `pets/dog.glb`, `pets/cat.glb` | **Empty — Batch 1** (procedural pets shown) |
+| `props/shop_*.glb` (shop display set) | **Empty — Batch 1** (procedural shop shown; placement code is wired when the files arrive) |
 
-## First migration target (needed now)
-
-Status: `characters/runner.glb`, `sneakers/street_runner.glb`, `pets/dog.glb`, `pets/cat.glb` and the three props are in place (see `CREDITS.md`).
-Still missing: **`sneakers/starter_canvas.glb`** (the slot keeps the procedural model until a suitable licensed asset is added).
-
-| File | What | Spec |
-|---|---|---|
-| `characters/runner.glb` | Rigged stylized runner (gender-neutral or two variants later) | Humanoid rig. Must include the clips **Idle, Walk, Run** (Sprint, Celebrate/Victory, Jump, Stumble optional). Animations in place (root motion is stripped automatically). ~1.8 m tall, ≤ 30k tris, ≤ 2 materials. Foot bones named like `foot_l/foot_r`, `LeftFoot/RightFoot` or Mixamo `mixamorig:LeftFoot`. Its own shoe mesh should be a separate mesh named `shoes` (it gets hidden, because game sneakers attach to the feet). |
-| `sneakers/starter_canvas.glb` | Classic canvas low-top (white canvas, vulcanized sole, rubber toe cap) | **One right shoe.** Toe → +Z, sole on the ground. Any scale: auto-fitted to 0.31 m long, with the origin under the ankle. ≤ 15k tris. Separate materials for sole rubber / midsole / upper / laces. Visible outsole, midsole, toe box, tongue, heel, laces, side panels, collar. |
-| `sneakers/street_runner.glb` | Everyday low-profile runner (grey mesh upper, orange accents) | Same spec as above |
-| `pets/dog.glb` | Stylized puppy | ≤ 12k tris, ~0.7 m tall (auto-fitted), faces +Z. Optional looping clip named `Idle` / `Float` / `Walk`. Golden Dog is generated from this model with a gold material variant. |
-| `pets/cat.glb` | Stylized kitten | Same spec; Diamond Cat and Cyber Cat reuse it with finish variants |
-| `props/tree.glb` | Stylized street tree (no planter, the planter stays) | Auto-fitted to 5.2 m tall, origin at trunk base, ≤ 8k tris |
-| `props/bench.glb` | Modern urban bench | Auto-fitted to 2.6 m long (along X), ≤ 8k tris |
-| `props/lamp.glb` | Modern street lamp (a neon accent ring is welcome) | Auto-fitted to 5.4 m tall, ≤ 8k tris, emissive lamp head |
+The previous off-style imports are kept for reference in `reference/retired-assets/` (not shipped).
+**Batch 1 deliverables, sizes, budgets, bone/clip names and file names: [`../ASSET_SPEC_BATCH1.md`](../ASSET_SPEC_BATCH1.md).**
 
 Optional:
 
@@ -49,12 +38,12 @@ Optional:
 |---|---|
 | `textures/env/lobby_1k.hdr` | 1k equirectangular HDR (outdoor city/plaza, daylight) for reflections on the HIGH preset. Without it, a generated room environment is used. |
 
-## Later slots (already defined, wired in later steps)
+## Later slots (after Batch 1 is approved)
 
 - **Sneakers:** `retro_high`, `court_classic`, `urban_dunk`, `air_sprint`, `velocity_x`, `neon_runner`, `carbon_racer`, `hyper_boost`, `plasma_kicks`, `cosmic_runner`, `galaxy_high`, `quantum_sneakers`.
 - **Pets (species):** `bunny`, `pigeon`, `fox`, `robot_dog`, `tiger`, `dragon`, `unicorn`, `phoenix`, `bear`, `slime`.
 - **Environment:** `sneaker_shop`, `pet_hatchery`, `run_portal`, `building_a/b/c`.
-- **Props:** `display_shelf`, `display_pedestal`, `planter`, `bollard`, `neon_sign`, `track_hurdle`, `traffic_barrier`, `egg`.
+- **Props:** `planter`, `bollard`, `neon_sign`, `track_hurdle`, `traffic_barrier`, `egg`.
 
 ## Testing the pipeline without real assets
 

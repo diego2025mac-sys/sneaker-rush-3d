@@ -1,18 +1,6 @@
 {
-  "generated": "2026-10-05T07:18:41.664Z",
+  "generated": "2026-10-05T07:32:38.602Z",
   "files": [
-    {
-      "path": "characters/runner.glb",
-      "bytes": 1456760
-    },
-    {
-      "path": "pets/cat.glb",
-      "bytes": 43432
-    },
-    {
-      "path": "pets/dog.glb",
-      "bytes": 851196
-    },
     {
       "path": "props/bench.glb",
       "bytes": 52940
@@ -24,10 +12,6 @@
     {
       "path": "props/tree.glb",
       "bytes": 57568
-    },
-    {
-      "path": "sneakers/street_runner.glb",
-      "bytes": 527012
     }
   ]
 }

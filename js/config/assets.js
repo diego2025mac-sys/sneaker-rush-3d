@@ -68,6 +68,11 @@ export const PROPS = {
   tree:  { file: 'props/tree.glb',  fit: { height: 5.2 } },
   bench: { file: 'props/bench.glb', fit: { length: 2.6 } },
   lamp:  { file: 'props/lamp.glb',  fit: { height: 5.4 } },
+  // sneaker-shop test corner (Kenney CC0), see Lobby.js "shop test corner"
+  shop_counter: { file: 'props/shop_counter.glb', fit: { length: 2.5 } },
+  shop_bench:   { file: 'props/shop_bench.glb',   fit: { length: 1.25 } },
+  shop_plant:   { file: 'props/shop_plant.glb',   fit: { height: 1.4 } },
+  shop_lamp:    { file: 'props/shop_lamp.glb',    fit: { height: 2.3 } },
 };
 
 /** Future slots (documented now, wired in later migration steps). */
@@ -83,6 +88,12 @@ export const FUTURE_SLOTS = [
 
 /** Per-file tuning without re-exporting (rotate a model that faces the wrong way, nudge sockets…). */
 export const ASSET_OVERRIDES = {
+  // Kenney Cube Pets are chunky; slightly smaller than the 0.72 m fit so they sit well beside the chibi runner
+  // Quaternius chibi runner: short legs cover less ground per cycle, so its clips are slower than the defaults
+  // (measured planted-foot slide), faster playback is allowed at sprint speeds, and the sneaker sockets sit 1 cm
+  // higher so planted soles rest on the ground. Animation playback only — movement speeds are unchanged.
+  'characters/runner.glb': { clipSpeeds: { walk: 0.95, run: 1.5 }, maxTimeScale: 5, socketOffset: [0, 0.01, 0] },
+  'pets/dog.glb': { scale: 0.8 },
+  'pets/cat.glb': { scale: 0.8 },
   // 'sneakers/starter_canvas.glb': { rotateY: 90 },
-  // 'characters/runner.glb': { clipSpeeds: { run: 4.2 }, shoeScale: 1.05, socketOffset: [0, 0, 0.02] },
 };

@@ -326,7 +326,7 @@ export class Panels {
            <b>C</b> / <b>Enter</b> cash out • <b>R</b> auto-run • <b>E</b> open nearby shop • <b>I</b> pets • <b>M</b> missions • <b>Esc</b> settings`}
         </div>
         <div class="controls-help" style="font-size:12px">
-          <b>Credits</b> 3D models: tree, bench and street light by Kay Lousberg / KayKit (CC0)
+          <b>Credits</b> 3D models: character and sneaker base by Quaternius (CC0) · pets and shop furniture by Kenney (CC0) · tree, bench and street light by Kay Lousberg / KayKit (CC0)
         </div>
         <div class="set-row" style="border:none;margin-top:12px">
           <span style="color:var(--pink)">Reset all progress</span>

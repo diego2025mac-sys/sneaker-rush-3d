@@ -1,6 +1,6 @@
 # Sneaker Rush 3D — art direction
 
-Status: **under review (2026-10-05).** KayKit is **no longer** the target direction. Three free art-direction options are documented in §4; the owner chooses one before any asset integration. Gameplay, balance, movement, camera and economy are out of scope for every art change.
+Status: **Option B chosen (2026-10-05)** — Quaternius chibi characters + Kenney world and pets. A first playable **visual slice** is integrated (player, Starter Canvas, Street Runner, dog, cat, one shop corner); everything else stays as it was until the slice is approved. KayKit is no longer the target direction. Gameplay, balance, movement, camera and economy are out of scope for every art change.
 
 ## 1. Constraints
 
@@ -38,7 +38,7 @@ See the comparison in the PR/discussion for screenshots. Summary:
 | Pets | Kenney Cube Pets | Kenney Cube Pets | Kenney Cube Pets |
 | Environment / shop | Kenney Mini Market, City kits, Nature, Furniture | Same Kenney packs (+ selected Quaternius packs after conversion) | Same Kenney packs |
 | Sneakers | Original chunky sneaker kit authored in Blender from the Kenney skater's foot shape | Base from Quaternius Modular Characters feet (CC0) → original variants; fits the existing `Foot.L/R` sockets | Painted on skins or block shoes |
-| Ranking | #2 | **#1 (recommended)** | #3 |
+| Ranking | #2 | **#1 — chosen** | #3 |
 
 ## 5. Rules that stay valid whatever is chosen
 
@@ -46,3 +46,14 @@ See the comparison in the PR/discussion for screenshots. Summary:
 - No real brands, logos or recognisable trademarked shoe designs.
 - Every file gets a row in `assets/CREDITS.md` before it is committed; CC-BY attributions also go in the in-game credits.
 - Visual changes are validated in-game against the procedural version from the same camera presets before they replace it.
+
+## 6. Visual slice (Option B) — what is in the game now
+
+| Slot | Asset | Notes |
+|---|---|---|
+| `characters/runner.glb` | Quaternius Casual_Male | Recoloured (skin, outfit); `Foot.L/R` sockets; clip speeds tuned in `ASSET_OVERRIDES` |
+| `sneakers/starter_canvas.glb`, `street_runner.glb` | Original variants of the Quaternius `SK_CasualFeet` mesh | Built by `tools/build-slice-assets.mjs` |
+| `pets/dog.glb`, `pets/cat.glb` | Kenney Cube Pets | Scale 0.8 via `ASSET_OVERRIDES` |
+| `props/shop_*.glb` | Kenney Mini Market counter + Furniture Kit bench, plant, floor lamp | North half of the shop only; the south half stays procedural for comparison |
+
+Not migrated yet (by design): the other 12 sneakers, the other pets, the rest of the shop, hatchery and lobby.

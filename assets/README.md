@@ -19,18 +19,19 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 - **Materials:** metallic-roughness, metalness 0, roughness 0.4–0.6. Colour from one gradient-swatch atlas (≤ 512², ≤ 1024² for the character) or vertex colours. **No photo textures, no normal/detail maps.** Emissive only for neon trims.
 - **Licensing:** CC0, a commissioned work-for-hire, or a licence that allows commercial web distribution (plus attribution if required). No real brands, logos or copied trademarked shoe designs. Record every file in `CREDITS.md` before committing it.
 
-## Current status
+## Current status (Option B visual slice)
 
 | Slot | State |
 |---|---|
-| `props/tree.glb`, `props/bench.glb`, `props/lamp.glb` | KayKit (CC0), shipped |
-| `characters/runner.glb` | **Empty — Batch 1** (procedural runner shown) |
-| `sneakers/starter_canvas.glb`, `sneakers/street_runner.glb` | **Empty — Batch 1** (procedural sneakers shown) |
-| `pets/dog.glb`, `pets/cat.glb` | **Empty — Batch 1** (procedural pets shown) |
-| `props/shop_*.glb` (shop display set) | **Empty — Batch 1** (procedural shop shown; placement code is wired when the files arrive) |
+| `characters/runner.glb` | Quaternius chibi Casual_Male (CC0, recoloured) |
+| `sneakers/starter_canvas.glb`, `sneakers/street_runner.glb` | Original variants of the Quaternius modular `Casual` footwear (CC0) |
+| `pets/dog.glb`, `pets/cat.glb` | Kenney Cube Pets (CC0) |
+| `props/shop_counter/bench/plant/lamp.glb` | Kenney Mini Market / Furniture Kit (CC0) — shop test corner |
+| `props/tree.glb`, `props/bench.glb`, `props/lamp.glb` | KayKit (CC0), unchanged for now |
+| Other 12 sneakers, other pets | Empty — procedural fallback (not migrated yet) |
 
+All files above are rebuilt from the originals in `reference/sources/` with `node tools/build-slice-assets.mjs`, then `npm run assets`.
 The previous off-style imports are kept for reference in `reference/retired-assets/` (not shipped).
-The previous KayKit Batch 1 spec ([`../ASSET_SPEC_BATCH1.md`](../ASSET_SPEC_BATCH1.md)) is superseded; new specs follow once a direction is chosen.
 
 Optional:
 

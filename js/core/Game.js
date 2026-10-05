@@ -29,7 +29,7 @@ import { NetAdapter } from '../net/NetAdapter.js';
 import { AssetManager } from '../assets/AssetManager.js';
 import { MaterialLibrary } from '../assets/MaterialLibrary.js';
 import { ModelLibrary } from '../assets/ModelLibrary.js';
-import { CHARACTER } from '../config/assets.js';
+import { CHARACTER, PROPS } from '../config/assets.js';
 import { RenderPipeline } from './RenderPipeline.js';
 import { GLBCharacter } from '../player/GLBCharacter.js';
 import { ContactShadows } from '../fx/ContactShadows.js';
@@ -84,7 +84,7 @@ export class Game {
         this.library.loadCharacter(),
         this.library.loadSneaker(this.state.sneakers.equipped),
         ...equippedPets.map((id) => this.library.loadPet(id)),
-        this.library.loadProp('tree'), this.library.loadProp('bench'), this.library.loadProp('lamp'),
+        ...Object.keys(PROPS).map((name) => this.library.loadProp(name)), // lobby + shop props (only files in the manifest are requested)
       ]),
       new Promise((res) => setTimeout(res, 15000)),
     ]);

@@ -123,10 +123,26 @@ export class Lobby {
         this.shelfSlots.push(new THREE.Vector3(sx - 5.6, y + 0.06, z));
       }
     }
-    // try-on benches + counter
-    for (const z of [-3.5, 3.5]) { box(sx - 1, 0.45, z, 3.2, 0.3, 1, 0xff3d7f); box(sx - 1, 0.2, z, 3, 0.4, 0.8, 0x2b2f3a); }
-    box(sx - 3.2, 0.6, -6.7, 2.4, 1.2, 2.4, 0x2b2f3a);
-    box(sx - 3.2, 1.25, -6.7, 2.6, 0.12, 2.6, 0xffffff);
+    // try-on benches + counter.
+    // Shop test corner (visual experiment): when the Kenney pieces are loaded, the north half (counter, north bench,
+    // plant, floor lamp) uses imported models and the south half stays procedural for a side-by-side comparison.
+    // Colliders are identical either way.
+    const shopCorner = this.library?.hasPropReady('shop_counter');
+    for (const z of [-3.5, 3.5]) {
+      if (shopCorner && z < 0 && this.library.hasPropReady('shop_bench')) {
+        for (const dx of [-0.65, 0.65]) this.propSpots.push({ name: 'shop_bench', x: sx - 1 + dx, z, ry: 0 });
+        continue;
+      }
+      box(sx - 1, 0.45, z, 3.2, 0.3, 1, 0xff3d7f); box(sx - 1, 0.2, z, 3, 0.4, 0.8, 0x2b2f3a);
+    }
+    if (shopCorner) {
+      this.propSpots.push({ name: 'shop_counter', x: sx - 3.2, z: -6.7, ry: Math.PI / 2 });
+      if (this.library.hasPropReady('shop_plant')) this.propSpots.push({ name: 'shop_plant', x: sx - 4.85, z: -8.15, ry: 0.4 });
+      if (this.library.hasPropReady('shop_lamp')) this.propSpots.push({ name: 'shop_lamp', x: sx - 4.85, z: -5.75, ry: 0 });
+    } else {
+      box(sx - 3.2, 0.6, -6.7, 2.4, 1.2, 2.4, 0x2b2f3a);
+      box(sx - 3.2, 1.25, -6.7, 2.6, 0.12, 2.6, 0xffffff);
+    }
     this.colliders.push({ minX: sx - 4.5, maxX: sx - 1.9, minZ: -8, maxZ: -5.4 });
     // feature podium (next upgrade)
     add(G.cylBase(20), { x: sx + 2.5, y: 0.1, z: 0, sx: 2.6, sz: 2.6, sy: 0.7, color: 0xffffff });

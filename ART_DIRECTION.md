@@ -53,7 +53,7 @@ See the comparison in the PR/discussion for screenshots. Summary:
 |---|---|---|
 | `characters/runner.glb` | Quaternius Casual_Male | Recoloured (skin, outfit); `Foot.L/R` sockets; clip speeds tuned in `ASSET_OVERRIDES` |
 | `sneakers/starter_canvas.glb`, `street_runner.glb` | Original variants of the Quaternius `SK_CasualFeet` mesh | Built by `tools/build-slice-assets.mjs` |
-| `pets/dog.glb`, `pets/cat.glb` | Kenney Cube Pets | Scale 0.8 via `ASSET_OVERRIDES` |
+| `pets/*.glb` (all 12 species) | Kenney Cube Pets | One base model per species (built by `tools/build-pets.mjs`), one shared scale; variants = channel recolours + emissive + small add-ons (`js/config/petLooks.js`) |
 | `props/shop_*.glb` | Kenney Mini Market counter + Furniture Kit bench, plant, floor lamp | North half of the shop only; the south half stays procedural for comparison |
 
-Not migrated yet (by design): the other 12 sneakers, the other pets, the rest of the shop, hatchery and lobby.
+Not migrated yet (by design): the other 12 sneakers and the rest of the shop. The full pet roster is migrated.

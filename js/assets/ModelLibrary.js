@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 import { SNEAKER_FILES, SNEAKER_SPEC, PET_FILES, PET_SPEC, PROPS, CHARACTER, ASSET_OVERRIDES } from '../config/assets.js';
 import { PETS } from '../config/pets.js';
+import { SPECIES } from '../config/petLooks.js';
 import { SNEAKER_BY_ID } from '../config/sneakers.js';
 import { sneakerGeometry, sneakerMaterial } from '../player/SneakerModel.js';
 import { makePetMesh } from '../pets/PetModel.js';
@@ -13,7 +14,7 @@ import { bus } from '../core/EventBus.js';
 const _box = new THREE.Box3(), _size = new THREE.Vector3(), _ctr = new THREE.Vector3();
 
 /** Wrap a model so its bounding box matches a target size and sits on y = 0. */
-function normalise(scene, { length, height, alongZ = true, anchorZ = null }, override = {}) {
+function normalise(scene, { length, height, unitScale, centerOn, alongZ = true, anchorZ = null }, override = {}) {
   const inner = scene;
   if (override.rotateY) inner.rotation.y += THREE.MathUtils.degToRad(override.rotateY);
   inner.updateMatrixWorld(true);
@@ -22,15 +23,19 @@ function normalise(scene, { length, height, alongZ = true, anchorZ = null }, ove
   wrapper.updateMatrixWorld(true);
   _box.setFromObject(inner, true).getSize(_size);
   let s = 1;
-  if (length) s = length / Math.max(alongZ ? _size.z : Math.max(_size.x, _size.z), 1e-6);
+  if (unitScale) s = unitScale;
+  else if (length) s = length / Math.max(alongZ ? _size.z : Math.max(_size.x, _size.z), 1e-6);
   else if (height) s = height / Math.max(_size.y, 1e-6);
   s *= override.scale || 1;
   inner.scale.multiplyScalar(s);
   wrapper.updateMatrixWorld(true);
   _box.setFromObject(inner, true);
+  const minY = _box.min.y;
+  const pivot = centerOn && inner.getObjectByName(centerOn);
+  if (pivot) _box.setFromObject(pivot, true);
   _box.getCenter(_ctr);
   inner.position.x -= _ctr.x;
-  inner.position.y -= _box.min.y;
+  inner.position.y -= minY;
   inner.position.z -= anchorZ === null ? _ctr.z : _box.min.z + (_box.max.z - _box.min.z) * anchorZ;
   if (override.offset) inner.position.add(new THREE.Vector3(...override.offset));
   wrapper.updateMatrixWorld(true);
@@ -95,7 +100,7 @@ export class ModelLibrary {
   }
   loadPet(id) {
     const sp = PETS[id]?.species;
-    return this.template('pet:' + sp, this.petPath(id), { height: PET_SPEC.height, anchorZ: null });
+    return this.template('pet:' + sp, this.petPath(id), { ...PET_SPEC, anchorZ: null });
   }
   /** { object, mixer? } — GLB species model with its finish, or the procedural pet. */
   createPet(id) {
@@ -108,7 +113,9 @@ export class ModelLibrary {
     }
     const object = this.cloneOf(t);
     object.userData.source = 'glb';
-    if (def.finish && def.finish !== 'normal') this.materials.applyFinish(object, def.finish, def.colors.map((c) => new THREE.Color(c)));
+    // one species model for every variant: show only this pet's variant add-on, then repaint its channels
+    object.traverse((o) => { if (o.name.startsWith('variant_')) o.visible = o.name === 'variant_' + id; });
+    this.materials.applyPetLook(object, def, SPECIES[def.species]?.glow || []);
     let mixer = null;
     const clip = pickClip(t.animations, ['idle', 'float', 'fly', 'hover', 'walk']);
     if (clip) {

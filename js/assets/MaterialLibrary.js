@@ -3,9 +3,10 @@
 //  • prepare(): applied to every imported model — colour spaces, env-map intensity, shadow flags and
 //    gentle tuning by material-name keywords (an artist naming a material "sole_rubber" or "eyelet_metal"
 //    gets sensible roughness/metalness even if the exporter lost them)
-//  • finish(): shared material variants for pet finishes (golden, diamond, crystal, neon, cosmic, shadow)
+//  • applyPetLook(): pet variants repaint the channel swatches of the species atlas (config/petLooks.js)
 import * as THREE from 'three';
 import { RENDER } from '../config/balance.js';
+import { finishLook, CH, ATLAS } from '../config/petLooks.js';
 
 export const PRESETS = {
   rubber:   { roughness: 0.92, metalness: 0.0 },
@@ -33,14 +34,6 @@ const KEYWORDS = [
   [/(plastic|foam|midsole|tpu)/, 'plastic'],
 ];
 
-const FINISHES = {
-  golden:  (m, c) => { m.color.set(0xffc93c); m.metalness = 1; m.roughness = 0.26; },
-  diamond: (m) => { m.color.set(0xc8f4ff); m.metalness = 0.15; m.roughness = 0.04; m.transparent = true; m.opacity = 0.86; m.envMapIntensity = 2; },
-  crystal: (m, c) => { m.color.set(c[0]); m.emissive?.set(c[1]); m.emissiveIntensity = 0.45; m.roughness = 0.08; m.transparent = true; m.opacity = 0.82; },
-  neon:    (m, c) => { m.color.multiplyScalar(0.35); m.emissive?.set(c[1]); m.emissiveIntensity = 0.9; },
-  cosmic:  (m, c) => { m.color.set(c[0]); m.emissive?.set(c[1]); m.emissiveIntensity = 0.5; m.roughness = 0.35; },
-  shadow:  (m, c) => { m.color.set(0x0b0718); m.emissive?.set(c[1]); m.emissiveIntensity = 0.35; },
-};
 
 export class MaterialLibrary {
   constructor() {
@@ -121,19 +114,31 @@ export class MaterialLibrary {
     root.traverse((o) => { if (o.isMesh) for (const m of [].concat(o.material)) this._registry.add(m); });
   }
 
-  /** Swap materials of a cloned model to a cached finish variant (golden dog, neon fox…). */
-  applyFinish(root, finish, colors = []) {
-    const fn = FINISHES[finish];
-    if (!fn) return;
+  /**
+   * Pet variants: repaint only the channel swatches of the species atlas (see config/petLooks.js) and
+   * build a matching emissive map, so a Golden Dog is the Dog model with gold fur but the same eyes.
+   * Cached per source material + pet id; the clone keeps the original geometry and animations.
+   */
+  applyPetLook(root, def, speciesGlow = []) {
+    const look = finishLook(def.finish, def.colors) || { colors: {}, glow: [], mat: null };
+    const glow = new Set([...look.glow, ...speciesGlow]);
+    if (!Object.keys(look.colors).length && !glow.size) return;
     root.traverse((o) => {
       if (!o.isMesh) return;
       const swap = (src) => {
-        const key = src.uuid + ':' + finish;
+        if (!src.map?.image || !src.isMeshStandardMaterial) return src;
+        const key = src.uuid + ':' + def.id;
         if (!this.finishCache.has(key)) {
           const m = src.clone();
-          if (!m.isMeshStandardMaterial && !m.isMeshPhysicalMaterial) return src;
-          fn(m, colors);
-          m.userData.baseEmissive = m.emissiveIntensity;
+          const [map, emissiveMap] = petLookTextures(src.map, look, glow);
+          m.map = map;
+          m.emissiveMap = emissiveMap;
+          m.emissive.set(0xffffff);
+          m.emissiveIntensity = 1;
+          if (look.mat) { m.metalness = look.mat.metalness; m.roughness = look.mat.roughness; }
+          m.envMapIntensity = this.envIntensity;
+          m.userData.baseEmissive = 1;
+          m.emissiveIntensity = this.emissiveFactor;
           this.finishCache.set(key, m);
         }
         return this.finishCache.get(key);
@@ -141,4 +146,48 @@ export class MaterialLibrary {
       o.material = Array.isArray(o.material) ? o.material.map(swap) : swap(o.material);
     });
   }
+}
+
+const _lum = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+/** Recoloured atlas + emissive mask for a pet look (canvas work on the 10 channel swatches only). */
+function petLookTextures(srcMap, look, glow) {
+  const img = srcMap.image, W = img.width, H = img.height;
+  const make = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+  const base = make(), emis = make();
+  const ctx = base.getContext('2d', { willReadFrequently: true }), ectx = emis.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  ectx.fillStyle = '#000'; ectx.fillRect(0, 0, W, H);
+  const cw = Math.round((W * ATLAS.cellW) / ATLAS.size), chH = Math.round((H * ATLAS.cellH) / ATLAS.size);
+  // the channel band is the top band of the PNG; a flipped ImageBitmap has it at the bottom
+  const top = ctx.getImageData(0, 0, cw, chH).data, bottom = ctx.getImageData(0, H - chH, cw, chH).data;
+  const sum = (d) => { let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i] + d[i + 1] + d[i + 2]; return s; };
+  const y0 = sum(top) >= sum(bottom) ? 0 : H - chH;
+  const strength = look.mat?.emissive ?? 0;
+  for (const [name, ch] of Object.entries(CH)) {
+    const x0 = ch * cw, cell = ctx.getImageData(x0, y0, cw, chH), d = cell.data;
+    const target = look.colors[name];
+    if (target !== undefined && target !== null) {
+      let ref = 1;
+      for (let i = 0; i < d.length; i += 4) ref = Math.max(ref, _lum(d[i], d[i + 1], d[i + 2]));
+      const tr = (target >> 16) & 255, tg = (target >> 8) & 255, tb = target & 255;
+      for (let i = 0; i < d.length; i += 4) {
+        const k = Math.max(0.62, Math.min(1, _lum(d[i], d[i + 1], d[i + 2]) / ref));
+        d[i] = tr * k; d[i + 1] = tg * k; d[i + 2] = tb * k;
+      }
+      ctx.putImageData(cell, x0, y0);
+    }
+    const e = glow.has(name) ? 1 : strength;
+    if (e > 0) {
+      const ed = new ImageData(new Uint8ClampedArray(d), cw, chH);
+      for (let i = 0; i < ed.data.length; i += 4) { ed.data[i] *= e; ed.data[i + 1] *= e; ed.data[i + 2] *= e; }
+      ectx.putImageData(ed, x0, y0);
+    }
+  }
+  const tex = (c) => {
+    const t = new THREE.CanvasTexture(c);
+    t.flipY = srcMap.flipY; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    t.magFilter = srcMap.magFilter; t.minFilter = srcMap.minFilter; t.wrapS = srcMap.wrapS; t.wrapT = srcMap.wrapT;
+    return t;
+  };
+  return [tex(base), tex(emis)];
 }

@@ -6,6 +6,8 @@
 //  so missing optional files are never requested (no 404s).
 // ============================================================================
 
+import { SPECIES } from './petLooks.js';
+
 export const ASSET_ROOT = 'assets/';
 
 /** sneaker id → assets/sneakers/<file>.glb  (one RIGHT shoe; the left foot is mirrored automatically) */
@@ -23,11 +25,10 @@ export const SNEAKER_SPEC = {
 };
 
 /** pet species → assets/pets/<file>.glb. Pets share species models; finishes (golden, neon…) are material variants. */
-export const PET_FILES = {
-  dog: 'dog', cat: 'cat', bunny: 'bunny', bird: 'pigeon', fox: 'fox', robodog: 'robot_dog',
-  tiger: 'tiger', dragon: 'dragon', unicorn: 'unicorn', phoenix: 'phoenix', bear: 'bear', slime: 'slime',
-};
-export const PET_SPEC = { height: 0.72 };
+export const PET_FILES = Object.fromEntries(Object.entries(SPECIES).map(([sp, s]) => [sp, s.file]));
+/** All pets share ONE scale (Dog's former size), so every species keeps Kenney's native proportions;
+ *  centring uses the `body` node so wings / tails don't shift the pet off its follow point. */
+export const PET_SPEC = { unitScale: 0.365, centerOn: 'body' };
 
 /** Rigged player character. Clip names are matched case-insensitively against these aliases. */
 export const CHARACTER = {
@@ -88,12 +89,9 @@ export const FUTURE_SLOTS = [
 
 /** Per-file tuning without re-exporting (rotate a model that faces the wrong way, nudge sockets…). */
 export const ASSET_OVERRIDES = {
-  // Kenney Cube Pets are chunky; slightly smaller than the 0.72 m fit so they sit well beside the chibi runner
   // Quaternius chibi runner: short legs cover less ground per cycle, so its clips are slower than the defaults
   // (measured planted-foot slide), faster playback is allowed at sprint speeds, and the sneaker sockets sit 1 cm
   // higher so planted soles rest on the ground. Animation playback only — movement speeds are unchanged.
   'characters/runner.glb': { clipSpeeds: { walk: 0.95, run: 1.5 }, maxTimeScale: 5, socketOffset: [0, 0.01, 0] },
-  'pets/dog.glb': { scale: 0.8 },
-  'pets/cat.glb': { scale: 0.8 },
   // 'sneakers/starter_canvas.glb': { rotateY: 90 },
 };

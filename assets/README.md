@@ -25,7 +25,7 @@ Slot names and per-file tuning live in `js/config/assets.js` (`SNEAKER_FILES`, `
 |---|---|
 | `characters/runner.glb` | Quaternius chibi Casual_Male (CC0, recoloured) |
 | `sneakers/starter_canvas.glb`, `sneakers/street_runner.glb` | Original variants of the Quaternius modular `Casual` footwear (CC0) |
-| `pets/dog.glb`, `pets/cat.glb` | Kenney Cube Pets (CC0) |
+| `pets/*.glb` (12 species) | Kenney Cube Pets (CC0), built by `tools/build-pets.mjs`; variants recoloured at runtime (`js/config/petLooks.js`) |
 | `props/shop_counter/bench/plant/lamp.glb` | Kenney Mini Market / Furniture Kit (CC0) — shop test corner |
 | `props/tree.glb`, `props/bench.glb`, `props/lamp.glb` | KayKit (CC0), unchanged for now |
 | Other 12 sneakers, other pets | Empty — procedural fallback (not migrated yet) |

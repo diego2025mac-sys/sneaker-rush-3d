@@ -6,7 +6,7 @@
 //   assets/characters/runner.glb        Quaternius "Casual_Male" (recoloured materials, geometry/rig/animations untouched)
 //   assets/sneakers/starter_canvas.glb  original variant derived from the Quaternius modular "Casual" footwear mesh
 //   assets/sneakers/street_runner.glb   original variant derived from the same mesh (reshaped sole/heel, new zones)
-//   assets/pets/dog.glb, cat.glb        Kenney Cube Pets (texture embedded, otherwise unmodified)
+//   (pets: see tools/build-pets.mjs — every species, Dog and Cat included, is built there)
 //   assets/props/shop_*.glb             Kenney Mini Market / Furniture Kit pieces for the shop test corner
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -237,8 +237,6 @@ function makeLit(json) {
   }
 }
 const copyKenney = (src, dst) => { const g = embedImages(readGltf(src)); makeLit(g.json); stamp(g.json, KENNEY); writeGlb(dst, g.json, g.bin); };
-copyKenney(`${SRC}/kenney/cube-pets/animal-dog.glb`, 'assets/pets/dog.glb');
-copyKenney(`${SRC}/kenney/cube-pets/animal-cat.glb`, 'assets/pets/cat.glb');
 copyKenney(`${SRC}/kenney/mini-market/cash-register.glb`, 'assets/props/shop_counter.glb');
 copyKenney(`${SRC}/kenney/furniture-kit/benchCushionLow.glb`, 'assets/props/shop_bench.glb');
 copyKenney(`${SRC}/kenney/furniture-kit/pottedPlant.glb`, 'assets/props/shop_plant.glb');

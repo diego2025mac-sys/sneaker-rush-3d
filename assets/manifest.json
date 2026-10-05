@@ -1,17 +1,57 @@
 {
-  "generated": "2026-10-05T09:40:19.741Z",
+  "generated": "2026-10-05T16:39:53.558Z",
   "files": [
     {
       "path": "characters/runner.glb",
       "bytes": 1238444
     },
     {
+      "path": "pets/bear.glb",
+      "bytes": 61648
+    },
+    {
+      "path": "pets/bunny.glb",
+      "bytes": 94924
+    },
+    {
       "path": "pets/cat.glb",
-      "bytes": 173764
+      "bytes": 105364
     },
     {
       "path": "pets/dog.glb",
-      "bytes": 128820
+      "bytes": 72084
+    },
+    {
+      "path": "pets/dragon.glb",
+      "bytes": 98320
+    },
+    {
+      "path": "pets/fox.glb",
+      "bytes": 84764
+    },
+    {
+      "path": "pets/phoenix.glb",
+      "bytes": 101588
+    },
+    {
+      "path": "pets/pigeon.glb",
+      "bytes": 78184
+    },
+    {
+      "path": "pets/robot_dog.glb",
+      "bytes": 84240
+    },
+    {
+      "path": "pets/slime.glb",
+      "bytes": 69164
+    },
+    {
+      "path": "pets/tiger.glb",
+      "bytes": 114648
+    },
+    {
+      "path": "pets/unicorn.glb",
+      "bytes": 113028
     },
     {
       "path": "props/bench.glb",

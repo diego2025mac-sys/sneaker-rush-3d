@@ -19,6 +19,7 @@ export class AssetManager {
     this.files = new Map();   // path → bytes
     this.cache = new Map();   // path → Promise<result|null>
     this.done = new Map();    // path → result (resolved, for synchronous access)
+    this.failed = new Set();  // paths whose request or parse failed
     this.stats = { requested: 0, loaded: 0, failed: 0, bytes: 0, ms: 0, log: [] };
     this._gltf = null;
   }
@@ -80,6 +81,7 @@ export class AssetManager {
         resolve(gltf);
       }, undefined, (err) => {
         this.stats.failed++;
+        this.failed.add(path);
         console.warn(`[Assets] failed to load ${path} — using fallback`, err?.message || err);
         resolve(null);
       });

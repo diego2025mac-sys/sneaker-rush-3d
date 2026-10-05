@@ -29,6 +29,7 @@ import { NetAdapter } from '../net/NetAdapter.js';
 import { AssetManager } from '../assets/AssetManager.js';
 import { MaterialLibrary } from '../assets/MaterialLibrary.js';
 import { ModelLibrary } from '../assets/ModelLibrary.js';
+import { CHARACTER } from '../config/assets.js';
 import { RenderPipeline } from './RenderPipeline.js';
 import { GLBCharacter } from '../player/GLBCharacter.js';
 import { ContactShadows } from '../fx/ContactShadows.js';
@@ -110,6 +111,7 @@ export class Game {
     this.character = charTemplate
       ? new GLBCharacter(this.scene, this.library, charTemplate, { sneaker: this.state.sneakers.equipped })
       : new Character(this.scene, { sneaker: this.state.sneakers.equipped }, this.library);
+    this.logPlayerAsset(!!charTemplate);
     this.shadows = new ContactShadows(this.scene);
     this.charShadow = this.shadows.create(0.55);
     this.character.anim.onStep = (speed) => this.audio.play('step', { vol: Math.min(1.4, 0.5 + speed / 20) });
@@ -147,6 +149,16 @@ export class Game {
       this.debugPanel = new DebugPanel(this);
     }
     await step(0.95, 'Ready!');
+  }
+
+  /** Say in the console which player model is used and, for the fallback, why (never fall back silently). */
+  logPlayerAsset(imported) {
+    const url = this.assets.root + CHARACTER.file;
+    if (imported) return console.info(`[Character] imported model: ${url}`);
+    const why = !this.assets.has(CHARACTER.file) ? 'the file is not listed in the asset manifest (missing from assets/ or `npm run assets` not run)'
+      : this.assets.failed.has(CHARACTER.file) ? 'the file failed to load (see the [Assets] warning above)'
+      : 'the file was still loading when the boot timeout expired';
+    console.warn(`[Character] procedural fallback — ${url}: ${why}`);
   }
 
   start() {

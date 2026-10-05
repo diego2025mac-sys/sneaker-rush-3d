@@ -178,6 +178,19 @@ export function makeEmissiveVertexMaterial({ glow = 1, base = 0, color = 0x00000
   return mat;
 }
 
+/** Append-only Float32 buffer (avoids huge JS arrays while batching). */
+class FloatBuf {
+  constructor() { this.a = new Float32Array(3072); this.length = 0; }
+  reserve(n) {
+    if (this.length + n <= this.a.length) return this.a;
+    const b = new Float32Array(Math.max(this.a.length * 2, this.length + n));
+    b.set(this.a.subarray(0, this.length));
+    return (this.a = b);
+  }
+  push(...v) { const a = this.reserve(v.length); for (const x of v) a[this.length++] = x; }
+  view() { return this.a.subarray(0, this.length); }
+}
+
 /** Collects static geometry and bakes it into a few merged meshes. */
 export class StaticBatch {
   constructor(seed = 1) {
@@ -194,7 +207,7 @@ export class StaticBatch {
    */
   add(geo, o) {
     const key = o.glow ? 'glow' : o.mat === 'metal' ? 'metal' : o.shadow === false ? 'flat' : 'lit';
-    const b = (this.buckets[key] ||= { pos: [], nor: [], col: [], emit: [] });
+    const b = (this.buckets[key] ||= { pos: new FloatBuf(), nor: new FloatBuf(), col: new FloatBuf(), emit: new FloatBuf() });
     const m = makeMatrix(o).clone();
     if (o.parent) m.premultiply(o.parent);
     _n.getNormalMatrix(m);
@@ -205,20 +218,53 @@ export class StaticBatch {
     const useAO = !o.glow && o.ao !== false;
     const baseY = o.aoBase ?? (o.parent ? o.parent.elements[13] : (o.y ?? 0) - 0.5 * (o.sy ?? o.s ?? 1));
     const aoH = o.aoH ?? 1.6;
-    for (let i = 0; i < P.count; i += 3) {
+    if (P.isInterleavedBufferAttribute || N.isInterleavedBufferAttribute || P.normalized || N.normalized || P.itemSize !== 3 || N.itemSize !== 3) {
+      for (let i = 0; i < P.count; i += 3) {
+        const f = 1 + (this.rnd() - 0.5) * 2 * vary;
+        for (let k = 0; k < 3; k++) {
+          const j = i + k;
+          _v.set(P.getX(j), P.getY(j), P.getZ(j)).applyMatrix4(m);
+          b.pos.push(_v.x, _v.y, _v.z);
+          const ao = useAO ? 0.68 + 0.32 * Math.min(1, Math.max(0, (_v.y - baseY) / aoH)) : 1;
+          _v.set(N.getX(j), N.getY(j), N.getZ(j)).applyMatrix3(_n).normalize();
+          b.nor.push(_v.x, _v.y, _v.z);
+          const g = f * ao;
+          b.col.push(Math.min(1, _c.r * g), Math.min(1, _c.g * g), Math.min(1, _c.b * g));
+          b.emit.push(emit);
+        }
+      }
+      return;
+    }
+    // fast path: same maths as Vector3.applyMatrix4 / applyMatrix3 / normalize, inlined (bit-identical output)
+    const e = m.elements, ne = _n.elements, pa = P.array, na = N.array;
+    const cr = _c.r, cg = _c.g, cb = _c.b, n = P.count;
+    const pos = b.pos.reserve(n * 3), nor = b.nor.reserve(n * 3), col = b.col.reserve(n * 3), em = b.emit.reserve(n);
+    let o3 = b.pos.length, o1 = b.emit.length;
+    for (let i = 0; i < n; i += 3) {
       const f = 1 + (this.rnd() - 0.5) * 2 * vary;
       for (let k = 0; k < 3; k++) {
-        const j = i + k;
-        _v.set(P.getX(j), P.getY(j), P.getZ(j)).applyMatrix4(m);
-        b.pos.push(_v.x, _v.y, _v.z);
-        const ao = useAO ? 0.68 + 0.32 * Math.min(1, Math.max(0, (_v.y - baseY) / aoH)) : 1;
-        _v.set(N.getX(j), N.getY(j), N.getZ(j)).applyMatrix3(_n).normalize();
-        b.nor.push(_v.x, _v.y, _v.z);
+        const j3 = (i + k) * 3;
+        const x = pa[j3], y = pa[j3 + 1], z = pa[j3 + 2];
+        const w = 1 / (e[3] * x + e[7] * y + e[11] * z + e[15]);
+        const vx = (e[0] * x + e[4] * y + e[8] * z + e[12]) * w;
+        const vy = (e[1] * x + e[5] * y + e[9] * z + e[13]) * w;
+        const vz = (e[2] * x + e[6] * y + e[10] * z + e[14]) * w;
+        pos[o3] = vx; pos[o3 + 1] = vy; pos[o3 + 2] = vz;
+        const ao = useAO ? 0.68 + 0.32 * Math.min(1, Math.max(0, (vy - baseY) / aoH)) : 1;
+        const nx = na[j3], ny = na[j3 + 1], nz = na[j3 + 2];
+        const mx = ne[0] * nx + ne[3] * ny + ne[6] * nz;
+        const my = ne[1] * nx + ne[4] * ny + ne[7] * nz;
+        const mz = ne[2] * nx + ne[5] * ny + ne[8] * nz;
+        const inv = 1 / (Math.sqrt(mx * mx + my * my + mz * mz) || 1);
+        nor[o3] = mx * inv; nor[o3 + 1] = my * inv; nor[o3 + 2] = mz * inv;
         const g = f * ao;
-        b.col.push(Math.min(1, _c.r * g), Math.min(1, _c.g * g), Math.min(1, _c.b * g));
-        b.emit.push(emit);
+        col[o3] = Math.min(1, cr * g); col[o3 + 1] = Math.min(1, cg * g); col[o3 + 2] = Math.min(1, cb * g);
+        em[o1++] = emit;
+        o3 += 3;
       }
     }
+    b.pos.length = b.nor.length = b.col.length = o3;
+    b.emit.length = o1;
   }
 
   /** Helper: build a parent matrix for compound props. */
@@ -228,18 +274,20 @@ export class StaticBatch {
 
   /** Merge one bucket (or all of them) into a single geometry. */
   geometry(keys = null) {
-    let pos = [], nor = [], col = [], emit = [];
-    for (const key of keys || Object.keys(this.buckets)) {
-      const b = this.buckets[key];
-      if (!b) continue;
-      pos = pos.concat(b.pos); nor = nor.concat(b.nor); col = col.concat(b.col); emit = emit.concat(b.emit);
-    }
+    const list = (keys || Object.keys(this.buckets)).map((k) => this.buckets[k]).filter(Boolean);
+    const merge = (name) => {
+      const out = new Float32Array(list.reduce((n, b) => n + b[name].length, 0));
+      let o = 0;
+      for (const b of list) { out.set(b[name].view(), o); o += b[name].length; }
+      return out;
+    };
+    const pos = merge('pos'), nor = merge('nor'), col = merge('col'), emit = merge('emit');
     this.buckets = {};
     const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-    g.setAttribute('emit', new THREE.Float32BufferAttribute(emit, 1));
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.setAttribute('emit', new THREE.BufferAttribute(emit, 1));
     g.computeBoundingSphere();
     return g;
   }
@@ -250,9 +298,9 @@ export class StaticBatch {
       const b = this.buckets[key];
       if (!b.pos.length) continue;
       const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.Float32BufferAttribute(b.pos, 3));
-      g.setAttribute('normal', new THREE.Float32BufferAttribute(b.nor, 3));
-      g.setAttribute('color', new THREE.Float32BufferAttribute(b.col, 3));
+      g.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
+      g.setAttribute('normal', new THREE.BufferAttribute(b.nor.view().slice(), 3));
+      g.setAttribute('color', new THREE.BufferAttribute(b.col.view().slice(), 3));
       g.computeBoundingSphere();
       g.computeBoundingBox();
       const mesh = new THREE.Mesh(g, materials[key] || materials.lit);

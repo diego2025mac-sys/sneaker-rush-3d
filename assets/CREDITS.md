@@ -7,10 +7,10 @@ Unless the "Modifications" section below says otherwise, files were downloaded u
 | `characters/runner.glb` | Hoodie Character | Quaternius | CC0 1.0 (public domain) | No | https://poly.pizza/m/gKLBoRsyKe | https://static.poly.pizza/bcd66ec5-5e81-4901-a222-47abc875fe2a.glb | 2026-10-04 |
 | `pets/dog.glb` | Shiba Inu (Animated Animal Pack) | Quaternius | CC0 1.0 (public domain) | No | https://poly.pizza/m/y4wdQpg767 | https://static.poly.pizza/ba6d0ee3-bcc0-4ef0-9d3c-a3e245b41c77.glb | 2026-10-04 |
 | `pets/cat.glb` | Cat | Poly by Google | **CC-BY 3.0 — attribution required** | **Yes** | https://poly.pizza/m/6dM1J6f6pm9 | https://static.poly.pizza/5d32eb38-9546-4ce4-aa77-bcef9328ee61.glb | 2026-10-04 |
-| `props/tree.glb` | Tree | Quaternius | CC0 1.0 (public domain) | No | https://poly.pizza/m/qZtx0AHhcy | https://static.poly.pizza/24cf9df9-435f-408e-971b-640d670ce973.glb | 2026-10-04 |
-| `props/bench.glb` | Bench | Quaternius | CC0 1.0 (public domain) | No | https://poly.pizza/m/jLxjFxFRpw | https://static.poly.pizza/1361c268-20f7-4e73-a931-ce434c6b503e.glb | 2026-10-04 |
+| `props/tree.glb` | tree_single_B (KayKit Medieval Hexagon Pack 1.0) | Kay Lousberg (KayKit) | CC0 1.0 (public domain) | No | https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0 | https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/tree/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature (`tree_single_B.gltf`) | 2026-10-05 |
+| `props/bench.glb` | bench (KayKit City Builder Bits 1.0) | Kay Lousberg (KayKit) | CC0 1.0 (public domain) | No | https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0 | https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0/tree/main/addons/kaykit_city_builder_bits/Assets/gltf (`bench.gltf`) | 2026-10-05 |
 | `sneakers/street_runner.glb` | Materials Variants Shoe ("street" variant) | Shopify, Inc. | **CC-BY 4.0 — attribution required** | **Yes** | https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/MaterialsVariantsShoe | https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb | 2026-10-04 |
-| `props/lamp.glb` | Street Light | Quaternius | CC0 1.0 (public domain) | No | https://poly.pizza/m/0lxF8Dl1jU | https://static.poly.pizza/451a3b57-b957-4184-9c67-4a11587299b5.glb | 2026-10-04 |
+| `props/lamp.glb` | streetlight (KayKit City Builder Bits 1.0) | Kay Lousberg (KayKit) | CC0 1.0 (public domain) | No | https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0 | https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0/tree/main/addons/kaykit_city_builder_bits/Assets/gltf (`streetlight.gltf`) | 2026-10-05 |
 
 Required attribution, shown in-game under Settings → Credits:
 
@@ -19,6 +19,12 @@ Required attribution, shown in-game under Settings → Credits:
 > "Materials Variants Shoe" © 2021 Shopify, Inc., licensed under CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/), via the Khronos glTF Sample Assets repository. Modified (see below).
 
 ## Modifications
+
+### `props/tree.glb`, `props/bench.glb`, `props/lamp.glb` (KayKit)
+
+Converted from the pack's `.gltf` + `.bin` + shared gradient atlas into single `.glb` files with glTF-Transform 4: geometry unchanged, atlas (`hexagons_medieval.png` / `citybits_texture.png`) resized from 1024² to 512² PNG and embedded, meshopt compression, `asset.copyright` set to the KayKit credit. Pack licence texts are in `licenses/KayKit-*-LICENSE.txt`. Attribution is optional under CC0; it is given anyway.
+
+The previous Quaternius tree / bench / street light (CC0) were replaced to keep one art direction (see `ART_DIRECTION.md` in the repository root).
 
 ### `sneakers/street_runner.glb`
 

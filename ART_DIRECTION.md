@@ -1,6 +1,6 @@
 # Sneaker Rush 3D — art direction & asset migration plan
 
-Status: **proposed** (2026-10-05). Gameplay, balance, movement and economy are out of scope for every step below.
+Status: **approved** (2026-10-05) — the single visual direction for the game. Gameplay, balance, movement and economy are out of scope for every step below.
 
 ## 1. Audit: where the style is inconsistent today
 
@@ -69,11 +69,13 @@ Sneakers are the hero items, so they get their own rules:
 4. Environment from KayKit City Builder Bits (free) + hatchery fixtures.
 5. Commission batch 2: remaining 12 sneakers (same kit), remaining 10 pets.
 
-### Interim recommendation
+### Interim look (done)
 
-Until batch 1 arrives, the imported Quaternius runner, Shiba, Poly cat and photoreal Street Runner are the off-style assets. Removing them from `assets/` makes those slots fall back to the procedural toys, which are closer to the chosen direction (compare `interim` vs `branch` screenshots in the PR/discussion). This is a one-line-per-file decision for the project owner; it is **not** done automatically.
+The off-style imports (Quaternius runner and Shiba, Poly cat, photoreal Street Runner) were removed from the shipped game and kept in `reference/retired-assets/` with their credits. Those slots show the procedural toys until Batch 1 arrives; the KayKit tree, bench and lamp stay.
 
 ## 4. Commission brief (copy-paste)
+
+Exact sizes, budgets, bone/clip names, file names and destinations for Batch 1: **`ASSET_SPEC_BATCH1.md`**.
 
 > Stylized low-poly game assets for a casual browser running/pet simulator, in the **KayKit style by Kay Lousberg** (chunky bevelled shapes, chibi proportions, single gradient atlas texture ≤ 512², no photo textures or normal maps, metalness 0). Deliver `.glb` (glTF 2.0), Y-up, metres, facing +Z, origin on the ground, plus source `.blend`. Full commercial rights for web/mobile distribution. No real brands or logos.
 >

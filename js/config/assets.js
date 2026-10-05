@@ -33,14 +33,15 @@ export const PET_SPEC = { height: 0.72 };
 export const CHARACTER = {
   file: 'characters/runner.glb',
   height: 1.8,
+  // KayKit standard-rig clip names come first (Batch 1 runner, see ASSET_SPEC_BATCH1.md); exact matches win over partial ones.
   clips: {
     idle: ['idle', 'breathing idle', 'stand'],
-    walk: ['walk', 'walking'],
-    run: ['run', 'running', 'jog'],
-    sprint: ['sprint', 'fast run', 'run_fast'],
-    celebrate: ['celebrate', 'victory', 'cheer', 'dance', 'wave'],
-    jump: ['jump', 'jumping', 'fall'],
-    stumble: ['stumble', 'hit', 'trip'],
+    walk: ['walking_a', 'walk', 'walking'],
+    run: ['running_a', 'run', 'running', 'jog'],
+    sprint: ['sprint', 'fast run', 'run_fast'], // none on the KayKit rig → reuses run, sped up
+    celebrate: ['cheer', 'celebrate', 'victory', 'dance', 'wave'],
+    jump: ['jump_idle', 'jump', 'jumping', 'fall'],
+    stumble: ['hit_a', 'stumble', 'hit', 'trip'],
   },
   // native ground speed (m/s) of each locomotion clip at timeScale 1 for a 1.8 m character
   clipSpeeds: { walk: 1.6, run: 3.9, sprint: 6.5 },
@@ -73,7 +74,10 @@ export const PROPS = {
 export const FUTURE_SLOTS = [
   'environment/sneaker_shop.glb', 'environment/pet_hatchery.glb', 'environment/run_portal.glb',
   'environment/building_a.glb', 'environment/building_b.glb', 'environment/building_c.glb',
-  'props/display_shelf.glb', 'props/display_pedestal.glb', 'props/planter.glb', 'props/bollard.glb',
+  // Batch 1 sneaker-shop display set (ASSET_SPEC_BATCH1.md); placement code is wired when the files arrive
+  'props/shop_wall_shelf.glb', 'props/shop_slatwall.glb', 'props/shop_pedestal_round.glb', 'props/shop_tryon_bench.glb',
+  'props/shop_counter.glb', 'props/shop_shoebox.glb',
+  'props/planter.glb', 'props/bollard.glb',
   'props/neon_sign.glb', 'props/track_hurdle.glb', 'props/traffic_barrier.glb', 'props/egg.glb',
 ];
 

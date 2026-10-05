@@ -57,6 +57,7 @@ assets/               production models (see assets/README.md for slot specs)
   manifest.json       generated list of files the game may request (npm run assets)
   CREDITS.md          authors, licences, attribution for every third-party file
   licenses/           licence texts shipped with the build
+reference/            retired assets kept for reference (not shipped)
 test/                 unit tests + GLB pipeline fixtures (test/fixtures/assets, never shipped)
 tools/                build, dev server, asset audit, fixtures, simulator, vendoring
 ```
@@ -67,7 +68,7 @@ Generated, not committed: `node_modules/`, `lib/` (`npm run vendor`), `dist/` (`
 
 Real `.glb` models go under `assets/<category>/` using the slot names in `js/config/assets.js`; then run `npm run assets`. Any slot without a file falls back to the procedural model, so the game always runs. Every third-party file must be recorded in [`assets/CREDITS.md`](assets/CREDITS.md) with its licence, and CC-BY attributions must also appear in the in-game credits.
 
-Do not use real brands, logos or copied trademarked shoe designs. All new art follows [`ART_DIRECTION.md`](ART_DIRECTION.md) (one KayKit-compatible stylized look).
+Do not use real brands, logos or copied trademarked shoe designs. All new art follows [`ART_DIRECTION.md`](ART_DIRECTION.md) (one KayKit-compatible stylized look); the first commissioned batch is specified in [`ASSET_SPEC_BATCH1.md`](ASSET_SPEC_BATCH1.md). Retired off-style imports are kept, unshipped, in `reference/retired-assets/`.
 
 ## Deploying to CrazyGames
 

@@ -84,12 +84,23 @@ export class HUD {
     this.setText(this.el.kmh, String(Math.round(E.kmh(run.currentSpeed))));
     this.el.momentum.style.width = `${Math.round(run.momentumRatio * 100)}%`;
     this.setText(this.el.runBoost, run.boostTime > 0 ? '⚡ BOOST!' : run.momentumRatio > 0.99 ? '🔥 MAX MOMENTUM' : '');
+    this.el.kmh.parentElement.classList.toggle('boosting', run.boostTime > 0);
     this.setText(this.el.petmult, `x${r.pet.toFixed(2)}`);
     this.setText(this.el.boostMoney, [r.rebirth > 1 ? `♻️ x${r.rebirth.toFixed(2)}` : '', r.boost > 1 ? '💵 x2 BOOST' : ''].filter(Boolean).join(' '));
     this.setText(this.el.biome, run.biomeName);
     this.setText(this.el.next, run.nextText);
     this.el.autorun.classList.toggle('on', run.autoRun);
     this.el.vignette.style.opacity = Math.min(0.9, run.fxLevel).toFixed(2);
+  }
+
+  /** Boost pad: the speed panel surges (scale + cyan glow) so the gain is visible at a glance. */
+  speedSurge() {
+    const el = this.el.kmh.parentElement;
+    el.classList.remove('surge');
+    void el.offsetWidth; // restart the animation
+    el.classList.add('surge');
+    clearTimeout(this.timers.surge);
+    this.timers.surge = setTimeout(() => el.classList.remove('surge'), 950);
   }
 
   // ------------------------------------------------------------ popups --

@@ -79,6 +79,13 @@ button { font-family: var(--title); cursor: pointer; border: none; color: #fff; 
 #run-pets .big { color: var(--yellow); }
 #run-speed .unit, #run-pets .unit { font-family: var(--title); font-size: 12px; color: var(--muted); letter-spacing: 1px; }
 #run-speed .sub, #run-pets .sub { font-size: 12px; font-weight: 900; color: var(--green); min-height: 0; }
+#run-speed { transform-origin: 0 0; transition: border-color 0.3s; }
+#run-speed.boosting { border-color: #5ff3ff; }
+#run-speed.boosting .big { color: #5ff3ff; text-shadow: 0 0 12px rgba(95, 243, 255, 0.7); }
+#run-speed.surge { animation: surge 0.9s ease-out; }
+#run-speed.surge .big { animation: surgenum 0.9s ease-out; }
+@keyframes surge { 12% { transform: scale(1.14); box-shadow: 0 0 28px rgba(95, 243, 255, 0.8); } 100% { transform: scale(1); box-shadow: 0 0 0 rgba(95, 243, 255, 0); } }
+@keyframes surgenum { 12% { color: #ffffff; text-shadow: 0 0 18px rgba(95, 243, 255, 1); } }
 .meter { margin-top: 5px; height: 6px; background: rgba(0, 0, 0, 0.45); border-radius: 3px; overflow: hidden; }
 #momentum-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--pink)); }
 #run-next { position: absolute; top: calc(190px + var(--safe-top)); left: 50%; transform: translateX(-50%); font-family: var(--title); font-size: 15px; color: rgba(255, 255, 255, 0.85); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5); white-space: nowrap; }

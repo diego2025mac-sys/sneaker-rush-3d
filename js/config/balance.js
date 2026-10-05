@@ -137,8 +137,8 @@ export const SPEED = {
   boostPadTime: 2.2,
   lateralBase: 7,
   lateralPerWorldSpeed: 0.16,
-  // thresholds (km/h) for the progressive speed effects
-  fx: { wind: 45, lines: 110, fov: 220, trails: 380 },
+  // km/h ranges over which the three visual speed tiers fade in (fx/SpeedFX.js) — visuals only
+  fx: { tier1: [55, 130], tier2: [200, 320], tier3: [400, 540] },
 };
 
 // --------------------------------------------------------------------- run --
@@ -149,7 +149,7 @@ export const RUN = {
   trackHalfWidth: 6.4,
   laneX: [-4.2, 0, 4.2],
   rebaseDistance: 600,       // floating origin: shift the world back every N world units
-  variantsPerBiome: 3,
+  variantsPerBiome: 4,        // normal road pieces per biome (road events are extra variants)
   safeStart: 70,             // world units without obstacles at the start
   autoCashoutIdle: 0,        // 0 = never (no punishment)
 };

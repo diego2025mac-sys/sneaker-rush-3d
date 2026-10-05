@@ -1,4 +1,6 @@
 // Gradient sky dome + star field + lights. Colours are blended by the run track as biomes change.
+// Run palettes add a horizon haze band, a soft glow toward the sun and softer shadows; palettes without
+// those fields (the lobby) render exactly as before.
 import * as THREE from 'three';
 import { mulberry32 } from '../utils/math.js';
 
@@ -11,6 +13,11 @@ export class Sky {
       top: { value: new THREE.Color(0x4aa8ff) },
       bottom: { value: new THREE.Color(0xcfeaff) },
       stars: { value: 0 },
+      horizon: { value: new THREE.Color(0xcfeaff) },
+      horizonMix: { value: 0 },
+      sunDir: { value: new THREE.Vector3(18, 32, 12).normalize() },
+      sunColor: { value: new THREE.Color(0xffffff) },
+      sunGlow: { value: 0 },
     };
     const mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -19,10 +26,19 @@ export class Sky {
       fog: false,
       vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
       fragmentShader: `
-        uniform vec3 top; uniform vec3 bottom; varying vec3 vDir;
+        uniform vec3 top; uniform vec3 bottom; uniform vec3 horizon; uniform float horizonMix;
+        uniform vec3 sunDir; uniform vec3 sunColor; uniform float sunGlow; varying vec3 vDir;
         void main(){
-          float h = clamp(vDir.y * 1.4 + 0.15, 0.0, 1.0);
+          vec3 d = normalize(vDir);
+          float h = clamp(d.y * 1.4 + 0.15, 0.0, 1.0);
           vec3 c = mix(bottom, top, pow(h, 0.8));
+          // haze band hugging the horizon (and filling everything below it)
+          float band = d.y < 0.0 ? 1.0 : exp(-d.y * 9.0);
+          c = mix(c, horizon, horizonMix * band);
+          // broad warm glow toward the sun's azimuth, strongest near the horizon
+          vec2 az = normalize(d.xz + 1e-4), saz = normalize(sunDir.xz);
+          float toward = pow(max(dot(az, saz), 0.0), 3.0);
+          c += sunColor * sunGlow * toward * (0.35 * band + 0.25 * pow(max(dot(d, sunDir), 0.0), 24.0));
           gl_FragColor = vec4(c, 1.0);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
@@ -80,6 +96,11 @@ export class Sky {
     this.hemi.intensity = p.hemiI;
     this.starMat.opacity = p.stars;
     this.stars.visible = p.stars > 0.01;
+    this.uniforms.horizon.value.set(p.horizon ?? p.skyBottom);
+    this.uniforms.horizonMix.value = p.horizon !== undefined ? 1 : 0;
+    this.uniforms.sunColor.value.set(p.sun);
+    this.uniforms.sunGlow.value = p.horizon !== undefined ? 0.22 : 0;
+    this.sun.shadow.intensity = p.shadowI ?? 1;
   }
 
   /** Blend between two palettes (t: 0..1). */
@@ -98,12 +119,19 @@ export class Sky {
     this.hemi.intensity = L(a.hemiI, b.hemiI);
     this.starMat.opacity = L(a.stars, b.stars);
     this.stars.visible = this.starMat.opacity > 0.01;
+    this.uniforms.horizon.value.copy(C(a.horizon ?? a.skyBottom, b.horizon ?? b.skyBottom));
+    this.uniforms.horizonMix.value = L(a.horizon !== undefined ? 1 : 0, b.horizon !== undefined ? 1 : 0);
+    this.uniforms.sunColor.value.copy(this.sun.color);
+    this.uniforms.sunGlow.value = 0.22 * this.uniforms.horizonMix.value;
+    this.sun.shadow.intensity = L(a.shadowI ?? 1, b.shadowI ?? 1);
   }
 
-  follow(target) {
+  /** Keep the sky, stars and the shadow frustum around `target`; `lead` shifts the shadow area ahead (runs). */
+  follow(target, lead = 0) {
     this.dome.position.copy(target);
     this.stars.position.copy(target);
     this.sun.position.copy(target).add(this.sunOffset);
     this.sun.target.position.copy(target);
+    if (lead) { this.sun.position.z += lead; this.sun.target.position.z += lead; }
   }
 }

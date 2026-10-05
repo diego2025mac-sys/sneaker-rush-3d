@@ -170,7 +170,7 @@ export class GLBCharacter {
     const applied = new Map();
     for (const [k, a] of Object.entries(this.actions)) applied.set(a, Math.max(applied.get(a) || 0, this.weights[k]));
     for (const [a, w] of applied) a.setEffectiveWeight(w);
-    if (clipSpeed && this.actions[state]) this.actions[state].timeScale = THREE.MathUtils.clamp(speed / clipSpeed, 0.55, c.maxTimeScale || 2.6);
+    if (clipSpeed && this.actions[state]) this.actions[state].timeScale = THREE.MathUtils.clamp(speed / clipSpeed, 0.55, (c.maxTimeScale || 2.6) * (this.timeScaleBoost || 1));
     this.mixer.update(dt);
     // footsteps from the locomotion phase
     const loco = this.actions[state];

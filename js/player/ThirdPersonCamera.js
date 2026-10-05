@@ -21,10 +21,12 @@ export class ThirdPersonCamera {
     this.invertY = MOUSE_LOOK.invertY;
     this.runMode = false;
     this.zoomOffset = 0;
+    this.lag = 0; // 0..1, set from the speed tier during runs: a looser follow and a touch more distance
   }
 
   setRunMode(on) {
     this.runMode = on;
+    if (!on) this.lag = 0;
     this.baseDistance = on ? CAMERA.runDistance : CAMERA.distance;
     this.targetDistance = this.baseDistance + this.zoomOffset;
   }
@@ -78,13 +80,13 @@ export class ThirdPersonCamera {
     if (instant) this.focus.set(fx, fy, fz);
     else {
       // tight follow on the run axis so high speeds never leave the camera behind
-      const f = 1 - Math.exp(-(this.runMode ? 30 : CAMERA.followLambda) * dt);
+      const f = 1 - Math.exp(-(this.runMode ? 30 - 12 * this.lag : CAMERA.followLambda) * dt);
       this.focus.x += (fx - this.focus.x) * f;
       this.focus.z += (fz - this.focus.z) * f;
       this.focus.y += (fy - this.focus.y) * (1 - Math.exp(-8 * dt));
     }
     const cp = Math.cos(this.pitch), sp = Math.sin(this.pitch);
-    const d = this.distance;
+    const d = this.distance + (this.runMode ? this.lag * 0.9 : 0);
     const cam = this.camera.position;
     cam.set(this.focus.x + Math.sin(this.yaw) * cp * d, this.focus.y + sp * d, this.focus.z + Math.cos(this.yaw) * cp * d);
     if (cam.y < 0.5) cam.y = 0.5;

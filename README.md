@@ -51,7 +51,7 @@ js/
   systems/            Economy, Progression
   ui/                 HUD, panels, mobile controls, thumbnails
   utils/              geometry helpers, labels, math
-  world/              lobby, run track, biome props, sky, posters
+  world/              lobby, run track (chunks, items, road events), biome props + terrain, far scenery, sky, posters
 assets/               production models (see assets/README.md for slot specs)
   characters/ pets/ props/ (sneakers/ environment/ textures/ when added)
   manifest.json       generated list of files the game may request (npm run assets)
@@ -63,6 +63,10 @@ tools/                build, dev server, asset audit, fixtures, simulator, vendo
 ```
 
 Generated, not committed: `node_modules/`, `lib/` (`npm run vendor`), `dist/` (`npm run build`).
+
+## Run world
+
+The track is an endless chain of 60 m chunks from a pool of 12 (`js/world/RunTrack.js`). Each biome has 4 cached road pieces plus road-event pieces (tunnel, bridge, forest arch, construction zone, checkpoint gate, canyon, city underpass), built in `js/world/BiomeProps.js` and randomly mirrored; variants of biomes left behind are disposed. Terrain uses one cross profile per biome (ditches, embankments, the mountain cliff road), so chunks always join; hills and plateaus sit on top. `js/world/Scenery.js` adds a distant backdrop per biome that fades into the horizon haze. Anything that points down the track (boost-pad arrows, painted arrows, streaks) derives its orientation from `js/world/TrackFrame.js`. Speed effects come in three tiers (~100 / ~300 / 500+ km/h, `SPEED.fx`, `js/fx/SpeedFX.js`). Everything here is visual: collisions, item spawning odds, coin counts, speeds and rewards are unchanged.
 
 ## Assets
 

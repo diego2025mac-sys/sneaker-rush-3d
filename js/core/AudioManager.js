@@ -183,8 +183,11 @@ export class AudioManager {
         this.tone({ freq: 220, type: 'sawtooth', dur: 0.25, vol: 0.06, slide: 0.4, filter: 1200 });
         break;
       case 'boost':
-        this.noiseBurst({ dur: 0.7, vol: 0.18, freq: 400, sweep: 8, type: 'bandpass', q: 2 });
-        this.tone({ freq: 180, type: 'sawtooth', dur: 0.5, vol: 0.06, slide: 4, filter: 3000 });
+        // rising whoosh + a bright upward arpeggio: reads as "speed up", never as a hit
+        this.noiseBurst({ dur: 0.75, vol: 0.16, freq: 500, sweep: 7, type: 'bandpass', q: 1.6 });
+        this.tone({ freq: 160, type: 'sawtooth', dur: 0.55, vol: 0.05, slide: 4.5, filter: 2600 });
+        [72, 76, 79, 84].forEach((n, i) => this.tone({ freq: NOTE(n), type: 'triangle', dur: 0.12, vol: 0.075, delay: 0.03 + i * 0.045 }));
+        this.tone({ freq: NOTE(88), type: 'sine', dur: 0.35, vol: 0.06, delay: 0.21, slide: 1.06 });
         break;
       case 'portal':
         this.tone({ freq: 160, type: 'sine', dur: 0.8, vol: 0.18, slide: 6 });

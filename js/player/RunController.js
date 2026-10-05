@@ -222,7 +222,9 @@ export class RunController {
           this.coins += v;
           g.progression.stat('coins', 1);
           g.audio.play('coin');
-          g.particles.sparkle(p, 0xffd23f, 0.6, 3);
+          // small collection burst: a ring of gold flecks + two white glints
+          for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; g.particles.emit(p.x, p.y, p.z, Math.cos(a) * 2.6, Math.sin(a) * 2.6, 0, i % 2 ? 0xffd23f : 0xffe9a0, 0.16, 0.32, 0, 0.9); }
+          g.particles.sparkle(p, 0xffffff, 0.4, 2);
           // batch coin pop-ups so fast coin lines don't spam the screen
           this.coinPop = (this.coinPop || 0) + v * E.petMultiplier(g.state) * E.rebirthEarnMult(g.state) * E.boostMoneyMult(g.state);
           if (this.time - (this.lastCoinPop || -1) > 0.35) {
@@ -256,7 +258,9 @@ export class RunController {
         this.boostTime = SPEED.boostPadTime;
         g.progression.stat('pads', 1);
         g.audio.play('boost');
-        g.particles.burst(p, { count: 20, color: 0x39ff88, speed: 4, up: 2, life: 0.5, size: 0.3, gravity: 0 });
+        g.speedFx.boost();
+        g.hud.speedSurge();
+        g.particles.burst(p, { count: 20, colors: [0x39ff88, 0x5ff3ff, 0xffffff], speed: 4, up: 2, life: 0.5, size: 0.3, gravity: 0 });
         g.floatAt(p.set(this.x, 2.4, this.z), 'BOOST!', '#39ff88');
         break;
     }

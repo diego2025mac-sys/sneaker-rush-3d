@@ -102,8 +102,9 @@ export class Game {
     this.particles = new Particles(this.scene, QUALITY.maxParticles);
     this.lobby = new Lobby(this.scene, this.library);
     await step(0.55, 'Laying the endless track…');
-    this.track = new RunTrack(this.scene);
-    this.track.getVariant(0, 0); // city variants ready for the first run
+    this.track = new RunTrack(this.scene, this.sky);
+    this.track.particles = this.particles;
+    this.track.getVariant(0); // city variants ready for the first run
     this.track.prewarm(0);
     await step(0.7, 'Lacing up your sneakers…');
     // visual character: rigged GLB when provided, procedural prototype otherwise (same interface)
@@ -291,6 +292,7 @@ export class Game {
     this.lobby.setVisible(true);
     this.track.hide();
     this.speedFx.stop();
+    this.character.timeScaleBoost = 1;
     this.sky.apply(LOBBY_PALETTE);
     this.cam.setRunMode(false);
     this.pets.runMode = false;
@@ -534,7 +536,7 @@ export class Game {
         break;
     }
 
-    this.sky.follow(this.character.position);
+    this.sky.follow(this.character.position, this.mode === 'run' ? 10 : 0);
     // contact shadow under the runner (fades while airborne)
     const cp = this.character.position;
     this.shadows.place(this.charShadow, cp.x, cp.z, 0.55 - Math.min(0.25, cp.y * 0.12), Math.max(0.15, 0.55 - cp.y * 0.18));
@@ -618,10 +620,12 @@ export class Game {
     for (let i = 0; i < steps && run.active; i++) run.update(dt);
     if (this.mode !== 'run') return;
     this.pets.update(dt, this.character, run.worldV);
+    this.cam.lag = this.speedFx.intensity;
     this.cam.update(dt, this.character.position, this.panels.isOpen ? null : this.input, 0, run.worldV);
     const sneaker = SNEAKER_BY_ID[this.state.sneakers.equipped];
     const fov = this.speedFx.update(dt, this.character, this.character, E.kmh(run.currentSpeed), run.worldV, sneaker.trail, sneaker.glow);
-    run.fxLevel = this.speedFx.level.lines * 0.8 + run.boostVis * 0.5;
+    this.character.timeScaleBoost = 1 + 0.25 * this.speedFx.intensity; // stride rate climbs with the speed tier
+    run.fxLevel = this.speedFx.level.lines * 0.6 + this.speedFx.level.t2 * 0.2 + run.boostVis * 0.5;
     const target = this.baseFov + fov * CAMERA.maxFovBoost + run.boostVis * 6;
     if (Math.abs(this.camera.fov - target) > 0.05) {
       this.camera.fov += (target - this.camera.fov) * Math.min(1, dt * 3);
